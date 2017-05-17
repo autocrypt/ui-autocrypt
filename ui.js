@@ -1,13 +1,12 @@
-/* global messages addmail confirm client user us */
-console.log('ui v0.0.6')
+console.log('autocrypt ui v0.0.7')
 
-function userInterface () {
+function userInterface (atcO) {
   var dom = {}
-  var panes = uiPanes()
+  var panes = atcO.uiPanes()
 
-  function getElements() {
-    collection = {}
-    for (id of arguments) {
+  function getElements () {
+    var collection = {}
+    for (var id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
@@ -16,20 +15,20 @@ function userInterface () {
   // run when the dom is loaded
   function setup (event) {
     dom = getElements('more', 'listReplacement', 'msgtable',
-        'username', 'from', 'to', 'subject', 'body', 'msglist',
-        'viewFrom', 'viewTo', 'viewSubject', 'viewDate', 'viewBody', 'viewEncrypted',
-        'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
-        'description', 'explanation', 'settings')
+      'username', 'from', 'to', 'subject', 'body', 'msglist',
+      'viewFrom', 'viewTo', 'viewSubject', 'viewDate', 'viewBody', 'viewEncrypted',
+      'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
+      'description', 'explanation', 'settings')
 
     dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
 
     panes.setup()
 
-    document.getElementById('tab-compose').addEventListener("selected", function (e) {
+    document.getElementById('tab-compose').addEventListener('selected', function (e) {
       dom.to.focus()
       updatecompose()
     })
-    document.getElementById('tab-list').addEventListener("selected", function (e) {
+    document.getElementById('tab-list').addEventListener('selected', function (e) {
       populateList()
       clearcompose()
     })
@@ -313,7 +312,7 @@ function userInterface () {
     return lock
   }
 
-  document.addEventListener("DOMContentLoaded", setup)
+  document.addEventListener('DOMContentLoaded', setup)
 
   return {
     setup: setup,

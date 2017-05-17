@@ -1,4 +1,6 @@
-function users () {
+if (!atc) var atc = {}
+
+function Users () {
   var storage = {}
   var currentId
 
@@ -40,4 +42,11 @@ function users () {
     current: current,
     select: select
   }
+}
+
+// exports the module if in a common.js env
+if (typeof module === 'object' && module.exports) {
+  module.exports = Users
+} else {
+  atc.users = Users
 }

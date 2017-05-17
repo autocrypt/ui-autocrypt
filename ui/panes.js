@@ -1,9 +1,11 @@
-function uiPanes () {
+/* global Event */
+if (!atc) var atc = {}
+function Panes (atcO) {
   var panes = {}
 
-  function getElements() {
-    collection = {}
-    for (id of arguments) {
+  function getElements () {
+    var collection = {}
+    for (var id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
@@ -13,11 +15,13 @@ function uiPanes () {
   // run when the dom is loaded
   function setup (event) {
     panes = getElements('compose', 'list', 'msgView', 'preferences')
-
-    function assignListener(id) {
-      var link = document.getElementById('tab-'+id)
+    if (!atc.DOM) atc.DOM = {}
+    atc.DOM.panes = panes
+    console.log(atc)
+    function assignListener (id) {
+      var link = document.getElementById('tab-' + id)
       if (link) {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function () {
           return select(id)
         }, false)
       }
@@ -25,15 +29,15 @@ function uiPanes () {
     Object.keys(panes).forEach(assignListener)
   }
 
-  var selected = new Event("selected")
+  var selected = new Event('selected')
 
   function select (choice) {
     for (var x in panes) {
       panes[x].style.display = 'none'
-        var e = document.getElementById('tab-' + x)
-        if (e) {
-          e.classList.remove('selected')
-        }
+      var e = document.getElementById('tab-' + x)
+      if (e) {
+        e.classList.remove('selected')
+      }
     }
     panes[choice].style.display = 'block'
     var n = 'tab-' + choice
@@ -48,5 +52,11 @@ function uiPanes () {
     setup: setup,
     select: select
   }
+}
 
+// exports the module if in a common.js env
+if (typeof module === 'object' && module.exports) {
+  module.exports = Panes
+} else {
+  atc.uiPanes = Panes
 }

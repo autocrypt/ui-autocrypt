@@ -71,13 +71,8 @@ function userInterface () {
   }
 
   function sendmail () {
-    if (addmail(dom.to.value, dom.subject.value, dom.body.value, dom.encrypted.checked)) {
-      clearcompose()
-      dom.list.dispatchEvent(select)
-      return false
-    } else {
-      return false
-    }
+    addmail(dom.to.value, dom.subject.value, dom.body.value, dom.encrypted.checked)
+    dom.list.dispatchEvent(select)
   }
 
   function clearcompose () {

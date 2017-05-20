@@ -38,13 +38,6 @@ function userInterface () {
     updateDescription()
   }
 
-  function clearcompose () {
-    dom.to.value = ''
-    dom.body.value = ''
-    dom.subject.value = ''
-    dom.encrypted.checked = false
-  }
-
   function showMsg (msg) {
     dom.viewFrom.innerText = msg['from']
     dom.viewTo.innerText = msg['to']
@@ -101,31 +94,15 @@ function userInterface () {
     }
   }
 
-  function updatecompose () {
-    var to = dom.to.value
-    var ac = client.getPeerAc(to)
+  function clearcompose () {
+    dom.compose.dispatchEvent(new Event('clear'))
+  }
 
-    if (!client.isEnabled()) {
-      if (ac.preferEncrypted) {
-        dom.encryptedRow.style.display = 'table-row'
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = 'enable Autocrypt to encrypt'
-      } else {
-        dom.encryptedRow.style.display = 'none'
-      }
-    } else {
-      dom.encryptedRow.style.display = 'table-row'
-      if (ac.key !== undefined) {
-        dom.encrypted.checked = ac.preferEncrypted
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = ''
-      } else {
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, false)
-        if (to === '') { dom.explanation.innerText = 'please choose a recipient' } else { dom.explanation.innerText = 'If you want to encrypt to ' + to + ', ask ' + to + ' to enable Autocrypt and send you an e-mail' }
-      }
-    }
+  function updatecompose () {
+    var e = new CustomEvent('update', {
+      detail: { client: client }
+    })
+    dom.compose.dispatchEvent(e)
   }
 
   function clickencrypted () {
@@ -199,11 +176,6 @@ function userInterface () {
   function autocryptEnable () {
     client.enable(dom.enable.checked)
     updateDescription()
-  }
-
-  function enablecheckbox (box, enabled) {
-    box.disabled = !enabled
-    if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
   }
 
   function updateDescription () {

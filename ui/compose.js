@@ -6,13 +6,24 @@
   function setup (event) {
     pane = document.getElementById('compose')
     dom = getElements(
-      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation'
+      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation',
+      'send'
       )
     if (pane) {
       pane.addEventListener('clear', clear, false)
       pane.addEventListener('update', update, false)
       pane.addEventListener('reply', reply, false)
     }
+
+    dom.send.addEventListener('click', function (){
+      var send = new CustomEvent('send', { detail: {
+        to: dom.to.value,
+        subject: dom.subject.value,
+        body: dom.body.value,
+        encrypted: dom.encrypted.checked
+      }})
+      pane.dispatchEvent(send)
+    }, false)
   }
 
   function clear (e) {

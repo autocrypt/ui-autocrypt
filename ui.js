@@ -43,6 +43,8 @@ function userInterface () {
       dom.compose.dispatchEvent(select)
     })
 
+    dom.compose.addEventListener("send", sendmail)
+
     changeUser('Alice')
     updateDescription()
   }
@@ -70,8 +72,8 @@ function userInterface () {
     }
   }
 
-  function sendmail () {
-    addmail(dom.to.value, dom.subject.value, dom.body.value, dom.encrypted.checked)
+  function sendmail (e) {
+    addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
     dom.list.dispatchEvent(select)
   }
 
@@ -254,15 +256,13 @@ function userInterface () {
   document.addEventListener("DOMContentLoaded", setup)
 
   return {
-    setup: setup,
     updateDescription: updateDescription,
     switchuser: switchuser,
     updatecompose: updatecompose,
     autocryptEnable: autocryptEnable,
     autocryptPreference: autocryptPreference,
     clickencrypted: clickencrypted,
-    more: more,
-    sendmail: sendmail
+    more: more
   }
 }
 

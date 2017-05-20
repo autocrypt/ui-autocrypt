@@ -17,9 +17,8 @@ function userInterface () {
   function setup (event) {
     dom = getElements('more', 'listReplacement', 'msgtable',
         'username', 'from', 'to', 'subject', 'body', 'msglist',
-        'viewFrom', 'viewTo', 'viewSubject', 'viewDate', 'viewBody', 'viewEncrypted',
         'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
-        'compose', 'list', 'msgView', 'preferences',
+        'compose', 'list', 'view', 'preferences',
         'description', 'explanation', 'settings')
 
     dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
@@ -39,22 +38,12 @@ function userInterface () {
   }
 
   function showMsg (msg) {
-    dom.viewFrom.innerText = msg['from']
-    dom.viewTo.innerText = msg['to']
-    dom.viewSubject.innerText = msg['subject']
-    dom.viewDate.innerText = msg['date']
-    dom.viewEncrypted.replaceChild(getEncryptionStatusNode(msg.encrypted), dom.viewEncrypted.childNodes[0])
-    dom.viewBody.innerText = msg['body']
-    // fix before refactor
-    var usr = us.current()
-    if (msg.from === usr.name) {
-      dom.reply.style.display = 'none'
-    } else {
-      dom.reply.style.display = 'inline'
-      dom.reply.onclick = function () { replyToMsg(msg) }
-    }
-
-    dom.msgView.dispatchEvent(select)
+    var show = new CustomEvent('show', {
+      detail: {message: msg}
+    })
+    dom.view.dispatchEvent(show)
+    dom.reply.onclick = function () { replyToMsg(msg) }
+    dom.view.dispatchEvent(select)
   }
 
   function replyToMsg (msg) {
@@ -223,20 +212,6 @@ function userInterface () {
       dom.yes.checked = false
       dom.no.checked = true
     }
-  }
-
-  function getEncryptionStatusNode (encrypted) {
-    var x = document.createElement('span')
-    if (encrypted) {
-      var sub = document.createElement('span')
-      x.appendChild(img('lock'))
-      sub.innerText = 'Message was encrypted'
-      x.appendChild(sub)
-    } else {
-      x.innerText = 'Message was not encrypted'
-    }
-
-    return x
   }
 
   function generateListEntryFromMsg (msg) {

@@ -12,7 +12,7 @@
 
   // run when the dom is loaded
   function setup (event) {
-    panes = getElements('compose', 'list', 'msgView', 'preferences')
+    panes = getElements('compose', 'list', 'view', 'preferences')
 
     function assignListener(id) {
       var link = document.getElementById('tab-'+id)

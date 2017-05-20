@@ -1,8 +1,11 @@
+/* globals Event CustomEvent */
 console.log('autocrypt ui v0.0.7')
 
 function userInterface (atcO) {
   var dom = {}
-  var panes = atcO.uiPanes()
+
+  // var panes = atcO.uiPanes()
+  var select = new Event('select')
 
   function getElements () {
     var collection = {}
@@ -15,14 +18,13 @@ function userInterface (atcO) {
   // run when the dom is loaded
   function setup (event) {
     dom = getElements('more', 'listReplacement', 'msgtable',
-      'username', 'from', 'to', 'subject', 'body', 'msglist',
-      'viewFrom', 'viewTo', 'viewSubject', 'viewDate', 'viewBody', 'viewEncrypted',
-      'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
-      'description', 'explanation', 'settings')
+        'username', 'from', 'to', 'subject', 'body', 'msglist',
+        'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
+        'compose', 'list', 'view', 'preferences',
+        'description', 'explanation', 'settings')
 
     dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
 
-    panes.setup()
 
     document.getElementById('tab-compose').addEventListener('selected', function (e) {
       dom.to.focus()
@@ -34,34 +36,16 @@ function userInterface (atcO) {
     })
 
     changeUser('Alice')
-    panes.select('list')
     updateDescription()
   }
 
-  function clearcompose () {
-    dom.to.value = ''
-    dom.body.value = ''
-    dom.subject.value = ''
-    dom.encrypted.checked = false
-  }
-
   function showMsg (msg) {
-    dom.viewFrom.innerText = msg['from']
-    dom.viewTo.innerText = msg['to']
-    dom.viewSubject.innerText = msg['subject']
-    dom.viewDate.innerText = msg['date']
-    dom.viewEncrypted.replaceChild(getEncryptionStatusNode(msg.encrypted), dom.viewEncrypted.childNodes[0])
-    dom.viewBody.innerText = msg['body']
-    // fix before refactor
-    var usr = us.current()
-    if (msg.from === usr.name) {
-      dom.reply.style.display = 'none'
-    } else {
-      dom.reply.style.display = 'inline'
-      dom.reply.onclick = function () { replyToMsg(msg) }
-    }
-
-    panes.select('msgView')
+    var show = new CustomEvent('show', {
+      detail: {message: msg}
+    })
+    dom.view.dispatchEvent(show)
+    dom.reply.onclick = function () { replyToMsg(msg) }
+    dom.view.dispatchEvent(select)
   }
 
   function replyToMsg (msg) {
@@ -72,7 +56,7 @@ function userInterface (atcO) {
     dom.to.value = msg.from
     dom.subject.value = 'Re: ' + msg.subject
     dom.body.value = indent(msg.body)
-    panes.select('compose')
+    dom.compose.dispatchEvent(select)
     dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
@@ -94,38 +78,22 @@ function userInterface (atcO) {
   function sendmail () {
     if (addmail(dom.to.value, dom.subject.value, dom.body.value, dom.encrypted.checked)) {
       clearcompose()
-      panes.select('list')
+      dom.list.dispatchEvent(select)
       return false
     } else {
       return false
     }
   }
 
-  function updatecompose () {
-    var to = dom.to.value
-    var ac = client.getPeerAc(to)
+  function clearcompose () {
+    dom.compose.dispatchEvent(new Event('clear'))
+  }
 
-    if (!client.isEnabled()) {
-      if (ac.preferEncrypted) {
-        dom.encryptedRow.style.display = 'table-row'
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = 'enable Autocrypt to encrypt'
-      } else {
-        dom.encryptedRow.style.display = 'none'
-      }
-    } else {
-      dom.encryptedRow.style.display = 'table-row'
-      if (ac.key !== undefined) {
-        dom.encrypted.checked = ac.preferEncrypted
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = ''
-      } else {
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, false)
-        if (to === '') { dom.explanation.innerText = 'please choose a recipient' } else { dom.explanation.innerText = 'If you want to encrypt to ' + to + ', ask ' + to + ' to enable Autocrypt and send you an e-mail' }
-      }
-    }
+  function updatecompose () {
+    var e = new CustomEvent('update', {
+      detail: { client: client }
+    })
+    dom.compose.dispatchEvent(e)
   }
 
   function clickencrypted () {
@@ -201,11 +169,6 @@ function userInterface (atcO) {
     updateDescription()
   }
 
-  function enablecheckbox (box, enabled) {
-    box.disabled = !enabled
-    if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
-  }
-
   function updateDescription () {
     var disabled = !dom['enable'].checked
     dom.yes.disabled = disabled
@@ -235,7 +198,7 @@ function userInterface (atcO) {
     dom.from.innerText = user.name
     setupprefs()
     dom.showmore.checked = false
-    panes.select('list')
+    dom.list.dispatchEvent(select)
     updateDescription()
   }
 
@@ -251,20 +214,6 @@ function userInterface (atcO) {
       dom.yes.checked = false
       dom.no.checked = true
     }
-  }
-
-  function getEncryptionStatusNode (encrypted) {
-    var x = document.createElement('span')
-    if (encrypted) {
-      var sub = document.createElement('span')
-      x.appendChild(img('lock'))
-      sub.innerText = 'Message was encrypted'
-      x.appendChild(sub)
-    } else {
-      x.innerText = 'Message was not encrypted'
-    }
-
-    return x
   }
 
   function generateListEntryFromMsg (msg) {

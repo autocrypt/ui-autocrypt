@@ -1,6 +1,18 @@
+/* globals localStorage */
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
 atc.setup.createMailStore = function (atcO) {
+  var storage = (function () {
+    var uid = new Date()
+    var result
+    try {
+      localStorage.setItem(uid, uid)
+      result = localStorage.getItem(uid) === uid
+      console.log(localStorage)
+      localStorage.removeItem(uid)
+      return result && localStorage
+    } catch (exception) {}
+  }())
   var usersMailsStore = {}
   function createUser (user) {
     var uName = user.toLowerCase()
@@ -34,11 +46,11 @@ atc.setup.createMailStore = function (atcO) {
     usersStore: usersMailsStore,
     createUser: createUser,
     getMail: getMails,
-    sendMail: sendMail
+    sendMail: sendMail,
+    storage: storage
   }
 }
 
 atc.setup.init = function (atcO) {
   atcO.msgStore = this.createMailStore()
 }
-atc.setup.init(atc)

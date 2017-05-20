@@ -1,11 +1,9 @@
-/* global Event */
-if (!atc) var atc = {}
-atc.uiPanes = function (atcO) {
+(function () {
   var panes = {}
 
-  function getElements () {
-    var collection = {}
-    for (var id of arguments) {
+  function getElements() {
+    collection = {}
+    for (id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
@@ -14,30 +12,35 @@ atc.uiPanes = function (atcO) {
 
   // run when the dom is loaded
   function setup (event) {
-    panes = getElements('compose', 'list', 'msgView', 'preferences')
-    // if (!atc.DOM) atc.DOM = {}
-    // atc.DOM.panes = panes
+    panes = getElements('compose', 'list', 'view', 'preferences')
 
-    function assignListener (id) {
-      var link = document.getElementById('tab-' + id)
+    function assignListener(id) {
+      var link = document.getElementById('tab-'+id)
+      var pane = document.getElementById(id)
+      function activate() {
+        return select(id)
+      }
       if (link) {
-        link.addEventListener('click', function () {
-          return select(id)
-        }, false)
+        link.addEventListener('click', activate, false)
+      }
+      if (pane) {
+        pane.addEventListener('select', activate, false)
       }
     }
     Object.keys(panes).forEach(assignListener)
+
+    select('list')
   }
 
-  var selected = new Event('selected')
+  var selected = new Event("selected")
 
   function select (choice) {
     for (var x in panes) {
       panes[x].style.display = 'none'
-      var e = document.getElementById('tab-' + x)
-      if (e) {
-        e.classList.remove('selected')
-      }
+        var e = document.getElementById('tab-' + x)
+        if (e) {
+          e.classList.remove('selected')
+        }
     }
     panes[choice].style.display = 'block'
     var n = 'tab-' + choice
@@ -48,13 +51,6 @@ atc.uiPanes = function (atcO) {
     }
   }
 
-  return {
-    setup: setup,
-    select: select
-  }
-}
+  document.addEventListener("DOMContentLoaded", setup)
 
-// exports the module if in a common.js env
-if (typeof module === 'object' && module.exports) {
-  module.exports = atc.uiPanes
-}
+})()

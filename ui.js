@@ -1,7 +1,8 @@
-/* globals Event CustomEvent */
-console.log('autocrypt ui v0.0.7')
-
-function userInterface (atcO) {
+/* globals Event CustomEvent client messages*/
+if (!atc) var atc = {}
+if (!atc.setup) atc.setup = {}
+atc.setup.userInterface = function (atcO) {
+  console.log('autocrypt ui setup v0.0.7')
   var dom = {}
 
   // var panes = atcO.uiPanes()
@@ -35,6 +36,16 @@ function userInterface (atcO) {
       clearcompose()
     })
 
+    dom.view.addEventListener("reply", function (e) {
+      // just reusing the event triggers an InvalidStateError.
+      // so let's have a new one...
+      var reply = new CustomEvent('reply', {
+        detail: e.detail
+      })
+      dom.compose.dispatchEvent(reply)
+      dom.compose.dispatchEvent(select)
+    })
+
     changeUser('Alice')
     updateDescription()
   }
@@ -44,20 +55,7 @@ function userInterface (atcO) {
       detail: {message: msg}
     })
     dom.view.dispatchEvent(show)
-    dom.reply.onclick = function () { replyToMsg(msg) }
     dom.view.dispatchEvent(select)
-  }
-
-  function replyToMsg (msg) {
-    function indent (str) {
-      return str.split('\n').map(function (y) { return '> ' + y }).join('\n')
-    }
-
-    dom.to.value = msg.from
-    dom.subject.value = 'Re: ' + msg.subject
-    dom.body.value = indent(msg.body)
-    dom.compose.dispatchEvent(select)
-    dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
   function populateList () {
@@ -276,13 +274,7 @@ function userInterface (atcO) {
   }
 }
 
-function why () {
-  console.log('why placeholder')
-}
-
 // exports the module if in a common.js env
 if (typeof module === 'object' && module.exports) {
-  module.exports = userInterface
-} else {
-  window.userInterface = userInterface
+  module.exports = atc.setup.userInterface
 }

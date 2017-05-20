@@ -1,11 +1,10 @@
-/* globals  volatileatc.Provider messages userInterface clients client cs */
-if (!atc) var atc = {}
-
+/* globals   messages  clients client cs atc */
 // javascript implementation of essential Autocrypt UI
 // var provider = atc.volatileProvider()
+var ui = atc.setup.userInterface(atc)
+var us = atc.setup.users()
 
-var ui = userInterface(atc)
-var us = atc.users()
+atc.setup.atc = function (atcO) {}
 
 var autocryptSwitch = function (isEnabled) {
   client.enable(isEnabled)
@@ -48,10 +47,10 @@ atc.provider.receive = function (msg) {
 }
 
 function resetClient (atcO) {
-    // messages for the current user
+  // messages for the current user
   messages = []
 
-  us = atc.users()
+  us = atc.setup.users()
   us.add('Alice', 'green')
   us.add('Bob', 'darkorange')
 

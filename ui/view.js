@@ -25,11 +25,19 @@
     dom.encrypted.replaceChild(getEncryptionStatusNode(msg.encrypted), dom.encrypted.childNodes[0])
     // fix before refactor
     var usr = us.current()
+    dom.reply.onclick = function () { replyToMsg(msg) }
     if (msg.from === usr.name) {
       dom.reply.style.display = 'none'
     } else {
       dom.reply.style.display = 'inline'
     }
+  }
+
+  function replyToMsg (msg) {
+    var reply = new CustomEvent('reply', {
+      detail: {message: msg}
+    })
+    pane.dispatchEvent(reply)
   }
 
   function getEncryptionStatusNode (encrypted) {

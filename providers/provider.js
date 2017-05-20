@@ -1,12 +1,11 @@
-/* globals CustomEvent */
+/* globals  */
 if (!atc) var atc = {}
 atc.provider = (function () {
-  console.log('test provider 0.0.3')
   var boxes = {}
   function send (msg) {
-    atc.msgStore.sendMail(msg)
-    var outbox = messages(msg.from)
-    var inbox = messages(msg.to)
+    atc.msgs.sendMail(msg)
+    var outbox = getMsgs(msg.from)
+    var inbox = getMsgs(msg.to)
     // var sendEvnt = new CustomEvent('sendMsg', { 'detail': msg })
     inbox.push(msg)
     if (msg.to.toLowerCase() !== msg.from.toLowerCase()) {
@@ -18,12 +17,12 @@ atc.provider = (function () {
   }
 
   function reload (name) {
-    for (var x in messages(name)) {
-      this.receive(messages(name)[x])
+    for (var x in getMsgs(name)) {
+      this.receive(getMsgs(name)[x])
     }
   }
 
-  function messages (name) {
+  function getMsgs (name) {
     if (boxes[name.toLowerCase()] === undefined) {
       boxes[name.toLowerCase()] = []
     };
@@ -43,5 +42,5 @@ atc.provider = (function () {
 
 // exports the module if in a common.js env
 if (typeof module === 'object' && module.exports) {
-  module.exports = atc.volatileProvider
+  module.exports = atc.provider
 }

@@ -7,7 +7,7 @@ function userTests (atcO, describe) {
     var us
 
     this.setup = function () {
-      us = atcO.users()
+      us = atcO.setup.users()
       us.add('Alice', 'green')
       us.add('Bob', 'darkorange')
     }

@@ -4,29 +4,30 @@
 if (!tests) var tests = []
 function msgTests (atcO, describe) {
   describe('Messages', function (it, assert) {
-    var msgStore = atcO.msgStore.usersStore
-    var mstM = atcO.msgStore
-    var uName = Math.floor(Math.random() * 99 + 1).toString()
+    var msgStore = atcO.msgs.msgStore
+    var msgs = atcO.msgs
+    var uName = 'abcd'
     var sampleMsg = {
       from: 'testUser',
       to: uName,
       subject: 'testMsg',
-      msg: 'this is a test message'
+      encrypted: false,
+      body: 'this is a test message'
     }
 
     this.setup = function () {
-      mstM.createUser('testuser')
+      msgs.createUser('testuser')
     }
 
     it('create a user in the mailStore', function () {
-      assert.equal(mstM[uName], undefined,
+      assert.equal(msgs[uName], undefined,
           'the user should not exists yet')
-      mstM.createUser(uName)
+      msgs.createUser(uName)
       assert.exist(uName, msgStore)
     })
 
     it('send an email to the store', function () {
-      mstM.sendMail(sampleMsg)
+      msgs.sendMail(sampleMsg)
       var testOut = msgStore['testuser'].outbox
       var testIn = msgStore[uName].inbox
       assert.ok(testOut.length > 0, 'outbox of testuser is empty')
@@ -35,7 +36,7 @@ function msgTests (atcO, describe) {
     })
 
     it('get the mail of an existing user', function () {
-      var mails = mstM.getMail(uName)
+      var mails = msgs.getMail(uName)
       console.log(mails)
     })
   })

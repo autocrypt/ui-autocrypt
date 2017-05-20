@@ -4,6 +4,7 @@
 
   // run when the dom is loaded
   function setup (event) {
+    console.log('compose setup')
     pane = document.getElementById('compose')
     dom = getElements(
       'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation'
@@ -11,6 +12,7 @@
     if (pane) {
       pane.addEventListener('clear', clear, false)
       pane.addEventListener('update', update, false)
+      pane.addEventListener('reply', reply, false)
     }
   }
 
@@ -34,11 +36,12 @@
         dom.explanation.innerText = 'enable Autocrypt to encrypt'
       } else {
         dom.encryptedRow.style.display = 'none'
+        dom.encrypted.checked = false
       }
     } else {
       dom.encryptedRow.style.display = 'table-row'
       if (ac.key !== undefined) {
-        dom.encrypted.checked = ac.preferEncrypted
+        dom.encrypted.checked = dom.encrypted.checked || ac.preferEncrypted
         enablecheckbox(dom.encrypted, true)
         dom.explanation.innerText = ''
       } else {
@@ -47,6 +50,19 @@
         if (to === '') { dom.explanation.innerText = 'please choose a recipient' } else { dom.explanation.innerText = 'If you want to encrypt to ' + to + ', ask ' + to + ' to enable Autocrypt and send you an e-mail' }
       }
     }
+  }
+
+  function reply(e){
+    var msg = e.detail.message
+
+    function indent (str) {
+      return str.split('\n').map(function (y) { return '> ' + y }).join('\n')
+    }
+
+    dom.to.value = msg.from
+    dom.subject.value = 'Re: ' + msg.subject
+    dom.body.value = indent(msg.body)
+    dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
   function getElements() {

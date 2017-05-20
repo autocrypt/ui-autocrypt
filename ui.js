@@ -33,6 +33,16 @@ function userInterface () {
       clearcompose()
     })
 
+    dom.view.addEventListener("reply", function (e) {
+      // just reusing the event triggers an InvalidStateError.
+      // so let's have a new one...
+      var reply = new CustomEvent('reply', {
+        detail: e.detail
+      })
+      dom.compose.dispatchEvent(reply)
+      dom.compose.dispatchEvent(select)
+    })
+
     changeUser('Alice')
     updateDescription()
   }
@@ -42,20 +52,7 @@ function userInterface () {
       detail: {message: msg}
     })
     dom.view.dispatchEvent(show)
-    dom.reply.onclick = function () { replyToMsg(msg) }
     dom.view.dispatchEvent(select)
-  }
-
-  function replyToMsg (msg) {
-    function indent (str) {
-      return str.split('\n').map(function (y) { return '> ' + y }).join('\n')
-    }
-
-    dom.to.value = msg.from
-    dom.subject.value = 'Re: ' + msg.subject
-    dom.body.value = indent(msg.body)
-    dom.compose.dispatchEvent(select)
-    dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
   function populateList () {

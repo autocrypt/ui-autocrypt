@@ -24,6 +24,16 @@ var Tests = (function () {
         'Expected "' + observed + '" to be "' + expected + '".')
   }
 
+  assert.ok = function (observed) {
+    assert(observed === true,
+      'Expected "' + observed + '" to be true."')
+  }
+
+  assert.exist = function (key, obj) {
+    if (typeof obj !== 'object') fail('expected an object, got a', typeof observed)
+    assert(obj[key] !== undefined,
+        'key' + key + 'does not exists')
+  }
   assert.notEqual = function (unexpected, observed) {
     assert(observed !== unexpected,
         'Expected somethign else than "' + unexpected + '".')

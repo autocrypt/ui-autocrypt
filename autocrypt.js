@@ -1,8 +1,8 @@
-/* globals  volatileProvider messages userInterface clients client cs*/
+/* globals  volatileatc.Provider messages userInterface clients client cs */
 if (!atc) var atc = {}
 
 // javascript implementation of essential Autocrypt UI
-var provider = volatileProvider
+// var provider = atc.volatileProvider()
 
 var ui = userInterface(atc)
 var us = atc.users()
@@ -24,7 +24,7 @@ var changeUser = function (name) {
 var switchuser = function (user) {
   client = cs.get(user.id)
   messages = []
-  provider.reload(user.id)
+  atc.provider.reload(user.id)
   ui.switchuser(user)
 }
 
@@ -38,11 +38,11 @@ var addmail = function (to, subj, body, encrypted) {
     autocrypt: client.makeHeader(),
     date: new Date()
   }
-  provider.send(msg)
+  atc.provider.send(msg)
   return true
 }
 
-provider.receive = function (msg) {
+atc.provider.receive = function (msg) {
   client.processIncoming(msg)
   messages.push(msg)
 }

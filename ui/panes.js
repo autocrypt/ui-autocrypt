@@ -1,6 +1,6 @@
 /* global Event */
 if (!atc) var atc = {}
-function Panes (atcO) {
+atc.uiPanes = function (atcO) {
   var panes = {}
 
   function getElements () {
@@ -15,9 +15,9 @@ function Panes (atcO) {
   // run when the dom is loaded
   function setup (event) {
     panes = getElements('compose', 'list', 'msgView', 'preferences')
-    if (!atc.DOM) atc.DOM = {}
-    atc.DOM.panes = panes
-    console.log(atc)
+    // if (!atc.DOM) atc.DOM = {}
+    // atc.DOM.panes = panes
+
     function assignListener (id) {
       var link = document.getElementById('tab-' + id)
       if (link) {
@@ -56,7 +56,5 @@ function Panes (atcO) {
 
 // exports the module if in a common.js env
 if (typeof module === 'object' && module.exports) {
-  module.exports = Panes
-} else {
-  atc.uiPanes = Panes
+  module.exports = atc.uiPanes
 }

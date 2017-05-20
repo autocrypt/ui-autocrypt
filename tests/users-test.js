@@ -1,8 +1,8 @@
+/* globals atc, Tests */
 /* unit test for users */
 
-if (!tests) var tests = {}
-function userTests (atcO, Tests) {
-  var describe = Tests.describe
+if (!tests) var tests = []
+function userTests (atcO, describe) {
   describe('Users', function (it, assert) {
     var us
 
@@ -46,6 +46,6 @@ function userTests (atcO, Tests) {
     })
   })
 }
-userTests(atc, Tests)
+userTests(atc, Tests.describe)
 
-tests.userTests = userTests
+tests.push(userTests)

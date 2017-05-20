@@ -3,7 +3,7 @@ console.log('ui v0.0.6')
 
 function userInterface () {
   var dom = {}
-  var panes = uiPanes()
+  var select = new Event('select')
 
   function getElements() {
     collection = {}
@@ -19,11 +19,11 @@ function userInterface () {
         'username', 'from', 'to', 'subject', 'body', 'msglist',
         'viewFrom', 'viewTo', 'viewSubject', 'viewDate', 'viewBody', 'viewEncrypted',
         'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
+        'compose', 'list', 'msgView', 'preferences',
         'description', 'explanation', 'settings')
 
     dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
 
-    panes.setup()
 
     document.getElementById('tab-compose').addEventListener("selected", function (e) {
       dom.to.focus()
@@ -35,7 +35,6 @@ function userInterface () {
     })
 
     changeUser('Alice')
-    panes.select('list')
     updateDescription()
   }
 
@@ -62,7 +61,7 @@ function userInterface () {
       dom.reply.onclick = function () { replyToMsg(msg) }
     }
 
-    panes.select('msgView')
+    dom.msgView.dispatchEvent(select)
   }
 
   function replyToMsg (msg) {
@@ -73,7 +72,7 @@ function userInterface () {
     dom.to.value = msg.from
     dom.subject.value = 'Re: ' + msg.subject
     dom.body.value = indent(msg.body)
-    panes.select('compose')
+    dom.compose.dispatchEvent(select)
     dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
@@ -95,7 +94,7 @@ function userInterface () {
   function sendmail () {
     if (addmail(dom.to.value, dom.subject.value, dom.body.value, dom.encrypted.checked)) {
       clearcompose()
-      panes.select('list')
+      dom.list.dispatchEvent(select)
       return false
     } else {
       return false
@@ -236,7 +235,7 @@ function userInterface () {
     dom.from.innerText = user.name
     setupprefs()
     dom.showmore.checked = false
-    panes.select('list')
+    dom.list.dispatchEvent(select)
     updateDescription()
   }
 

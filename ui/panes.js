@@ -1,4 +1,4 @@
-function uiPanes () {
+(function () {
   var panes = {}
 
   function getElements() {
@@ -16,13 +16,20 @@ function uiPanes () {
 
     function assignListener(id) {
       var link = document.getElementById('tab-'+id)
+      var pane = document.getElementById(id)
+      function activate() {
+        return select(id)
+      }
       if (link) {
-        link.addEventListener('click', function() {
-          return select(id)
-        }, false)
+        link.addEventListener('click', activate, false)
+      }
+      if (pane) {
+        pane.addEventListener('select', activate, false)
       }
     }
     Object.keys(panes).forEach(assignListener)
+
+    select('list')
   }
 
   var selected = new Event("selected")
@@ -44,9 +51,6 @@ function uiPanes () {
     }
   }
 
-  return {
-    setup: setup,
-    select: select
-  }
+  document.addEventListener("DOMContentLoaded", setup)
 
-}
+})()

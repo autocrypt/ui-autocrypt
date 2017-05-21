@@ -1,8 +1,7 @@
 /* globals atc, Tests */
 /* unit test for users */
 
-if (!tests) var tests = []
-function msgTests (atcO, describe) {
+(function msgTests (atcO, describe) {
   describe('Messages', function (it, assert) {
     var msgStore = atcO.msgs.msgStore
     var msgs = atcO.msgs
@@ -37,9 +36,11 @@ function msgTests (atcO, describe) {
 
     it('get the mail of an existing user', function () {
       var mails = msgs.getMail(uName)
+      assert.equal(mails.inbox[0].to, uName, `it should have retrived ${uName}'s email`)
+    })
+    it('returns a blank mailbox if it tries to retrive a non existing user mail', function () {
+      var mails = msgs.getMail(uName + 'izjoaeij')
+      assert.equal(mails.inbox.length, 0, `it should return and empty mailbox`)
     })
   })
-}
-msgTests(atc, Tests.describe)
-
-tests.push(msgTests)
+})(atc, Tests.describe)

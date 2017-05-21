@@ -4,11 +4,11 @@ var Tests = (function () {
   var failures = 0
 
   function log (message) {
-    console.log('%c ' + message, 'color: #444')
+    console.log('%c' + message, 'color: #444')
   }
 
   function fail (message) {
-    console.log('%c ' + message, 'color: red')
+    console.log('%c' + message, 'color: red')
   }
 
   function assert (truth, message) {
@@ -69,7 +69,7 @@ var Tests = (function () {
       await run.bind(env)()
       if (teardown) teardown()
     };
-    return (assertions + ' assertions. ' + failures + ' failures.')
+    return console.log('%c' + assertions + ' assertions. ' + '%c' + failures + ' failures.', 'color: green', 'color: red')
   };
 
   function describe (context, fun) {

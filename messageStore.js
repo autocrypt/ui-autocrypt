@@ -1,6 +1,7 @@
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
 atc.setup.createMailStore = function () {
+  // console.log('setup mailStore')
   // test for local storage and make a ref to it if true
   var storage = atc.provider.storage
 

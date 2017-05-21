@@ -1,8 +1,7 @@
 /* globals atc, Tests */
 /* unit test for users */
 
-if (!tests) var tests = []
-function userTests (atcO, describe) {
+(function userTests (atcO, describe) {
   describe('Users', function (it, assert) {
     var us
 
@@ -45,7 +44,5 @@ function userTests (atcO, describe) {
       assert.notEqual(id, us.current().id)
     })
   })
-}
-userTests(atc, Tests.describe)
+})(atc, Tests.describe)
 
-tests.push(userTests)

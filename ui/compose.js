@@ -2,30 +2,6 @@
   var dom;
   var pane;
 
-  // run when the dom is loaded
-  function setup (event) {
-    pane = document.getElementById('compose')
-    dom = getElements(
-      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation',
-      'send'
-      )
-    if (pane) {
-      pane.addEventListener('clear', clear, false)
-      pane.addEventListener('update', update, false)
-      pane.addEventListener('reply', reply, false)
-    }
-
-    dom.send.addEventListener('click', function (){
-      var send = new CustomEvent('send', { detail: {
-        to: dom.to.value,
-        subject: dom.subject.value,
-        body: dom.body.value,
-        encrypted: dom.encrypted.checked
-      }})
-      pane.dispatchEvent(send)
-    }, false)
-  }
-
   function clear (e) {
     dom.to.value = ''
     dom.body.value = ''
@@ -37,6 +13,10 @@
     var client = e.detail.client
     var to = dom.to.value
     var ac = client.getPeerAc(to)
+    function enablecheckbox (box, enabled) {
+      box.disabled = !enabled
+        if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
+    }
 
     if (!client.isEnabled()) {
       if (ac.preferEncrypted) {
@@ -75,6 +55,16 @@
     dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
+  function send (){
+    var sendEvent = new CustomEvent('send', { detail: {
+      to: dom.to.value,
+      subject: dom.subject.value,
+      body: dom.body.value,
+      encrypted: dom.encrypted.checked
+    }})
+    pane.dispatchEvent(sendEvent)
+  }
+
   function getElements() {
     collection = {}
     for (id of arguments) {
@@ -83,9 +73,20 @@
     return collection
   }
 
-  function enablecheckbox (box, enabled) {
-    box.disabled = !enabled
-    if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
+  // run when the dom is loaded
+  function setup (event) {
+    pane = document.getElementById('compose')
+    dom = getElements(
+      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation',
+      'send'
+      )
+    if (pane) {
+      pane.addEventListener('clear', clear, false)
+      pane.addEventListener('update', update, false)
+      pane.addEventListener('reply', reply, false)
+    }
+
+    dom.send.addEventListener('click', send, false)
   }
 
   document.addEventListener("DOMContentLoaded", setup)

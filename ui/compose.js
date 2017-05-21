@@ -13,34 +13,57 @@
     var to = dom.to.value
     var client = e.detail.client
     var peer = e.detail.peer
+    var toggle = {}
 
-    function enablecheckbox (box, enabled) {
+    function enableCheckbox (enabled) {
+      var box = dom.encrypted
       box.disabled = !enabled
-        if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
+      if (enabled) {
+        box.parentElement.classList.remove('disabled')
+      } else {
+        box.parentElement.classList.add('disabled')
+      }
     }
 
     if (!client.isEnabled()) {
       if (peer.preferEncrypted) {
-        dom.encryptedRow.style.display = 'table-row'
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = 'enable Autocrypt to encrypt'
-      } else {
-        dom.encryptedRow.style.display = 'none'
-        dom.encrypted.checked = false
+        toggle.visible = true
+        toggle.checked = false
+        toggle.enabled = true
+        toggle.explanation = 'enable Autocrypt to encrypt'
       }
-    } else {
-      dom.encryptedRow.style.display = 'table-row'
-      if (peer.key !== undefined) {
-        dom.encrypted.checked = dom.encrypted.checked || peer.preferEncrypted
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = ''
-      } else {
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, false)
-        if (to === '') { dom.explanation.innerText = 'please choose a recipient' } else { dom.explanation.innerText = 'If you want to encrypt to ' + to + ', ask ' + to + ' to enable Autocrypt and send you an e-mail' }
+      else {
+        toggle.visible = false
+        toggle.checked = false
+        toggle.enabled = false
+        toggle.explanation = ''
       }
     }
+    else {
+      toggle.visible = true
+      dom.encryptedRow.style.display = 'table-row'
+      if (peer.key) {
+        toggle.checked = dom.encrypted.checked || peer.preferEncrypted
+        toggle.enabled = true
+        toggle.explanation = ''
+      }
+      else {
+        toggle.checked = false
+        toggle.enabled = false
+        if (to === '') {
+          toggle.explanation = 'please choose a recipient'
+        }
+        else {
+          toggle.explanation = 'If you want to encrypt to ' + to +
+            ', ask ' + to + ' to enable Autocrypt and send you an e-mail'
+        }
+      }
+    }
+    dom.encryptedRow.style.display = toggle.visible ? 'table-row' : 'none'
+    enableCheckbox(toggle.enabled)
+    dom.encrypted.checked = toggle.checked
+    dom.explanation.innerText = toggle.explanation
+
   }
 
   function reply(e){

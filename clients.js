@@ -77,38 +77,27 @@ function clients () {
 
     function encryptOptionTo (recipient) {
       var peer = getPeerAc(recipient)
-      var toggle = {
-        visible: true,
-        enabled: true,
-        preferred: false,
-        explanation: ''
-      }
-      if (!isEnabled()) {
-        if (peer.preferEncrypted) {
-          toggle.explanation = 'enable Autocrypt to encrypt'
-        }
-        else {
-          toggle.visible = false
-          toggle.enabled = false
-        }
-      }
-      else {
-        if (peer.key) {
-          toggle.preferred = peer.preferEncrypted
-        }
-        else {
-          toggle.enabled = false
+      function explanation() {
+        if (isEnabled()) {
+          if (peer.key) { return }
           if (recipient === '') {
-            toggle.explanation = 'please choose a recipient'
+            return 'please choose a recipient'
           }
-          else {
-            toggle.explanation = 'If you want to encrypt to ' + recipient +
-              ', ask ' + recipient +
-              ' to enable Autocrypt and send you an e-mail'
-          }
+          return 'If you want to encrypt to ' + recipient +
+            ', ask ' + recipient +
+            ' to enable Autocrypt and send you an e-mail'
+        }
+        if (peer.preferEncrypted) {
+          return 'enable Autocrypt to encrypt'
         }
       }
-      return toggle
+
+      return {
+        visible: isEnabled() || peer.preferEncrypted,
+        enabled: (isEnabled() && peer.key) || (peer.key && peer.preferEncrypted),
+        preferred: isEnabled() && peer.key && peer.preferEncrypted,
+        explanation: explanation() || ''
+      }
     }
 
     return {

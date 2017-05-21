@@ -27,7 +27,6 @@
     // On replies this may already be checked. So do not uncheck.
     dom.encrypted.checked = dom.encrypted.checked || toggle.preferred
     dom.explanation.innerText = toggle.explanation
-
   }
 
   function reply(e){

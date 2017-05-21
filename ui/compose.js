@@ -85,6 +85,10 @@
 
     dom.send.addEventListener('click', send, false)
     dom.to.addEventListener('change', toChanged, false)
+
+    var lock = document.createElement('img')
+    lock.src = 'assets/images/emblem-readonly.png'
+    dom.encrypted.parentNode.insertBefore(lock, dom.encrypted)
   }
 
   document.addEventListener("DOMContentLoaded", setup)

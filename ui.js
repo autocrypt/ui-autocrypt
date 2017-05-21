@@ -15,18 +15,16 @@ function userInterface () {
 
   // run when the dom is loaded
   function setup (event) {
-    dom = getElements('more', 'listReplacement', 'msgtable',
-        'username', 'from', 'to', 'subject', 'body', 'msglist',
+    dom = getElements('more', 'username', 'from', 'to',
         'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
         'compose', 'list', 'view', 'preferences',
         'description', 'explanation', 'settings')
 
-    dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
-
     dom.list.addEventListener("selected", function (e) {
+      clearCompose()
       populateList()
-      clearcompose()
     })
+    dom.list.addEventListener("showMessage", showMessage)
 
     dom.view.addEventListener("reply", function (e) {
       // just reusing the event triggers an InvalidStateError.
@@ -45,27 +43,19 @@ function userInterface () {
     updateDescription()
   }
 
-  function showMsg (msg) {
+  function showMessage (e) {
     var show = new CustomEvent('show', {
-      detail: {message: msg}
+      detail: e.detail
     })
     dom.view.dispatchEvent(show)
     dom.view.dispatchEvent(select)
   }
 
   function populateList () {
-    while (dom.msglist.hasChildNodes()) { dom.msglist.removeChild(dom.msglist.lastChild) }
-
-    if (messages.length) {
-      for (var x in messages) {
-        dom.msglist.appendChild(generateListEntryFromMsg(messages[x]))
-      }
-      dom.listReplacement.style.display = 'none'
-      dom.msgtable.style.display = 'table'
-    } else {
-      dom.listReplacement.style.display = 'block'
-      dom.msgtable.style.display = 'none'
-    }
+    var populate = new CustomEvent('populate', {
+      detail: {messages: messages}
+    })
+    dom.list.dispatchEvent(populate)
   }
 
   function sendmail (e) {
@@ -73,7 +63,7 @@ function userInterface () {
     dom.list.dispatchEvent(select)
   }
 
-  function clearcompose () {
+  function clearCompose () {
     dom.compose.dispatchEvent(new Event('clear'))
   }
 
@@ -204,51 +194,6 @@ function userInterface () {
       dom.yes.checked = false
       dom.no.checked = true
     }
-  }
-
-  function generateListEntryFromMsg (msg) {
-    var ret = document.createElement('tr')
-    ret.classList.add('message')
-    ret.onclick = function () { showMsg(msg) }
-
-    var e = document.createElement('td')
-    if (msg['encrypted']) { e.appendChild(img('lock')) }
-    if (msg['to'].toLowerCase() === dom.username.innerText.toLowerCase()) {
-      e.appendChild(img('back'))
-    }
-    if (msg['from'].toLowerCase() === dom.username.innerText.toLowerCase()) {
-      e.appendChild(img('forward'))
-    }
-    ret.appendChild(e)
-
-    var f = document.createElement('td')
-    f.innerText = msg['from']
-    ret.appendChild(f)
-
-    var t = document.createElement('td')
-    t.innerText = msg['to']
-    ret.appendChild(t)
-
-    var s = document.createElement('td')
-    s.innerText = msg['subject']
-    ret.appendChild(s)
-
-    var d = document.createElement('td')
-    d.innerText = msg['date']
-    ret.appendChild(d)
-
-    return ret
-  }
-
-  function img (what) {
-    var index = {
-      lock: 'assets/images/emblem-readonly.png',
-      back: 'assets/images/back.png',
-      forward: 'assets/images/forward.png'
-    }
-    var lock = document.createElement('img')
-    lock.src = index[what]
-    return lock
   }
 
   document.addEventListener("DOMContentLoaded", setup)

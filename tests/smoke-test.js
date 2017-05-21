@@ -14,7 +14,7 @@
   function composeTo (recipient) {
     click('tab-compose')
     document.getElementById('to').value = recipient
-    document.getElementById('to').onchange()
+    document.getElementById('to').dispatchEvent(new Event('change'))
     document.getElementById('subject').value = 'subject'
     document.getElementById('body').value = 'body'
   }

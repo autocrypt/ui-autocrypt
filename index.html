@@ -3,8 +3,11 @@
         <title>Autocrypt Essential UI Demo</title>
         <script type="text/javascript" src="providers/volatileProvider.js"></script>
         <script type="text/javascript" src="users.js"></script>
-        <script type="text/javascript" src="ui/panes.js"></script>
         <script type="text/javascript" src="ui.js"></script>
+        <script type="text/javascript" src="ui/panes.js"></script>
+        <script type="text/javascript" src="ui/compose.js"></script>
+        <script type="text/javascript" src="ui/list.js"></script>
+        <script type="text/javascript" src="ui/view.js"></script>
         <script type="text/javascript" src="clients.js"></script>
         <script type="text/javascript" src="autocrypt.js"></script>
         <script type="text/javascript" src="tests.js"></script>
@@ -34,11 +37,11 @@
             <div>
                 <table><tbody>
                         <tr><th>From:</th><td id="from"></td></tr>
-                        <tr><th>To:</th><td><input onchange="return ui.updatecompose();" id="to" /></td></tr>
+                        <tr><th>To:</th><td><input id="to" /></td></tr>
                         <tr><th>Subject:</th><td><input id="subject" /></td></tr>
                         <tr id="encryptedRow"><td colspan="2"><label><input type="checkbox" onclick="return ui.clickencrypted();" id="encrypted">Encrypt</label><span id="explanation"></span></td></tr>
                         <tr><td id="compose-actions" colspan="2">
-                                <input type="button" id="send" onclick="return ui.sendmail();" value="Send"/>
+                                <input type="button" id="send" value="Send"/>
                         </td></tr>
                         <tr><td colspan="2">
                                 <textarea id="body"></textarea>
@@ -58,7 +61,7 @@
             </table>
         </div>
 
-        <div id="msgView">
+        <div id="view">
                 <table><tbody>
                         <tr><th>From:</th><td id="viewFrom"></td></tr>
                         <tr><th>To:</th><td id="viewTo"></td></tr>

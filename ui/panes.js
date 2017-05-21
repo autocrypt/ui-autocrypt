@@ -1,4 +1,4 @@
-function uiPanes () {
+(function () {
   var panes = {}
 
   function getElements() {
@@ -12,17 +12,24 @@ function uiPanes () {
 
   // run when the dom is loaded
   function setup (event) {
-    panes = getElements('compose', 'list', 'msgView', 'preferences')
+    panes = getElements('compose', 'list', 'view', 'preferences')
 
     function assignListener(id) {
       var link = document.getElementById('tab-'+id)
+      var pane = document.getElementById(id)
+      function activate() {
+        return select(id)
+      }
       if (link) {
-        link.addEventListener('click', function() {
-          return select(id)
-        }, false)
+        link.addEventListener('click', activate, false)
+      }
+      if (pane) {
+        pane.addEventListener('select', activate, false)
       }
     }
     Object.keys(panes).forEach(assignListener)
+
+    select('list')
   }
 
   var selected = new Event("selected")
@@ -36,17 +43,14 @@ function uiPanes () {
         }
     }
     panes[choice].style.display = 'block'
+    panes[choice].dispatchEvent(selected)
     var n = 'tab-' + choice
     e = document.getElementById(n)
     if (e) {
       e.classList.add('selected')
-      e.dispatchEvent(selected)
     }
   }
 
-  return {
-    setup: setup,
-    select: select
-  }
+  document.addEventListener("DOMContentLoaded", setup)
 
-}
+})()

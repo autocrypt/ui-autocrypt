@@ -4,7 +4,6 @@ atc.setup.createMailStore = function () {
   // test for local storage and make a ref to it if true
   var storage = atc.provider.storage
 
-
   var usersMailsStore = {}
 
   // if there is a storage build initial store from it

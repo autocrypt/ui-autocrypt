@@ -1,7 +1,8 @@
 /* global messages addmail confirm client Event CustomEvent changeUser */
-console.log('ui v0.0.6')
+
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
+
 atc.setup.userInterface = function () {
   var dom = {}
   var select = new Event('select')
@@ -16,18 +17,16 @@ atc.setup.userInterface = function () {
 
   // run when the dom is loaded
   function setup (event) {
-    dom = getElements('more', 'listReplacement', 'msgtable',
-      'username', 'from', 'to', 'subject', 'body', 'msglist',
-      'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
-      'compose', 'list', 'view', 'preferences',
-      'description', 'explanation', 'settings')
-
-    dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
+    dom = getElements('more', 'username', 'from', 'to',
+        'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
+        'compose', 'list', 'view', 'preferences',
+        'description', 'explanation', 'settings')
 
     dom.list.addEventListener('selected', function (e) {
+      clearCompose()
       populateList()
-      clearcompose()
     })
+    dom.list.addEventListener('showMessage', showMessage)
 
     dom.view.addEventListener('reply', function (e) {
       // just reusing the event triggers an InvalidStateError.
@@ -46,27 +45,19 @@ atc.setup.userInterface = function () {
     updateDescription()
   }
 
-  function showMsg (msg) {
+  function showMessage (e) {
     var show = new CustomEvent('show', {
-      detail: {message: msg}
+      detail: e.detail
     })
     dom.view.dispatchEvent(show)
     dom.view.dispatchEvent(select)
   }
 
   function populateList () {
-    while (dom.msglist.hasChildNodes()) { dom.msglist.removeChild(dom.msglist.lastChild) }
-
-    if (messages.length) {
-      for (var x in messages) {
-        dom.msglist.appendChild(generateListEntryFromMsg(messages[x]))
-      }
-      dom.listReplacement.style.display = 'none'
-      dom.msgtable.style.display = 'table'
-    } else {
-      dom.listReplacement.style.display = 'block'
-      dom.msgtable.style.display = 'none'
-    }
+    var populate = new CustomEvent('populate', {
+      detail: {messages: messages}
+    })
+    dom.list.dispatchEvent(populate)
   }
 
   function sendmail (e) {
@@ -74,7 +65,7 @@ atc.setup.userInterface = function () {
     dom.list.dispatchEvent(select)
   }
 
-  function clearcompose () {
+  function clearCompose () {
     dom.compose.dispatchEvent(new Event('clear'))
   }
 
@@ -150,7 +141,6 @@ atc.setup.userInterface = function () {
     } else {
       delete client.autocrypt.preferEncrypted
     }
-    console.log('prefer encrypted set to:', client.autocrypt.preferEncrypted)
     client.selfSyncAutocryptState()
     updateDescription()
   }
@@ -207,52 +197,9 @@ atc.setup.userInterface = function () {
     }
   }
 
-  function generateListEntryFromMsg (msg) {
-    var ret = document.createElement('tr')
-    ret.classList.add('message')
-    ret.onclick = function () { showMsg(msg) }
-
-    var e = document.createElement('td')
-    if (msg['encrypted']) { e.appendChild(img('lock')) }
-    if (msg['to'].toLowerCase() === dom.username.innerText.toLowerCase()) {
-      e.appendChild(img('back'))
-    }
-    if (msg['from'].toLowerCase() === dom.username.innerText.toLowerCase()) {
-      e.appendChild(img('forward'))
-    }
-    ret.appendChild(e)
-
-    var f = document.createElement('td')
-    f.innerText = msg['from']
-    ret.appendChild(f)
-
-    var t = document.createElement('td')
-    t.innerText = msg['to']
-    ret.appendChild(t)
-
-    var s = document.createElement('td')
-    s.innerText = msg['subject']
-    ret.appendChild(s)
-
-    var d = document.createElement('td')
-    d.innerText = msg['date']
-    ret.appendChild(d)
-
-    return ret
-  }
-
-  function img (what) {
-    var index = {
-      lock: 'assets/images/emblem-readonly.png',
-      back: 'assets/images/back.png',
-      forward: 'assets/images/forward.png'
-    }
-    var lock = document.createElement('img')
-    lock.src = index[what]
-    return lock
-  }
-
-  document.addEventListener('DOMContentLoaded', setup)
+  // push setup in the inits for the DOM ready event
+  if (!atc.setup.inits) atc.setup.inits = []
+  atc.setup.inits.push({name: 'setup ui', setup: setup})
 
   return {
     updateDescription: updateDescription,
@@ -262,9 +209,4 @@ atc.setup.userInterface = function () {
     clickencrypted: clickencrypted,
     more: more
   }
-}
-
-// exports the module if in a common.js env
-if (typeof module === 'object' && module.exports) {
-  module.exports = atc.setup.userInterface
 }

@@ -1,23 +1,23 @@
+/* globals atc Event */
 (function () {
   var panes = {}
 
-  function getElements() {
-    collection = {}
-    for (id of arguments) {
+  function getElements () {
+    var collection = {}
+    for (var id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
   }
 
-
   // run when the dom is loaded
   function setup (event) {
     panes = getElements('compose', 'list', 'view', 'preferences')
 
-    function assignListener(id) {
-      var link = document.getElementById('tab-'+id)
+    function assignListener (id) {
+      var link = document.getElementById('tab-' + id)
       var pane = document.getElementById(id)
-      function activate() {
+      function activate () {
         return select(id)
       }
       if (link) {
@@ -32,15 +32,15 @@
     select('list')
   }
 
-  var selected = new Event("selected")
+  var selected = new Event('selected')
 
   function select (choice) {
     for (var x in panes) {
       panes[x].style.display = 'none'
-        var e = document.getElementById('tab-' + x)
-        if (e) {
-          e.classList.remove('selected')
-        }
+      var e = document.getElementById('tab-' + x)
+      if (e) {
+        e.classList.remove('selected')
+      }
     }
     panes[choice].style.display = 'block'
     panes[choice].dispatchEvent(selected)
@@ -50,7 +50,6 @@
       e.classList.add('selected')
     }
   }
-
-  document.addEventListener("DOMContentLoaded", setup)
-
+  if (!atc.setup.inits) atc.setup.inits = []
+  atc.setup.inits.push({name: 'setup panes', setup: setup})
 })()

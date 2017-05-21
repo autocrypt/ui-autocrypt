@@ -54,7 +54,7 @@ function resetClient (atcO) {
   us.add('Alice', 'green')
   us.add('Bob', 'darkorange')
 
-  cs = clients()
+  cs = atc.setup.clients()
 };
 
 resetClient()

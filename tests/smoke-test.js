@@ -2,7 +2,7 @@
 (function () {
   var describe = Tests.describe
 
-  function click(id) {
+  function click (id) {
     document.getElementById(id).click()
   }
 

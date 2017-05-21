@@ -1,10 +1,9 @@
-/* globals Event CustomEvent client messages*/
+/* global messages addmail confirm client Event CustomEvent changeUser */
+console.log('ui v0.0.6')
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
-atc.setup.userInterface = function (atcO) {
+atc.setup.userInterface = function () {
   var dom = {}
-
-  // var panes = atcO.uiPanes()
   var select = new Event('select')
 
   function getElements () {
@@ -18,24 +17,19 @@ atc.setup.userInterface = function (atcO) {
   // run when the dom is loaded
   function setup (event) {
     dom = getElements('more', 'listReplacement', 'msgtable',
-        'username', 'from', 'to', 'subject', 'body', 'msglist',
-        'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
-        'compose', 'list', 'view', 'preferences',
-        'description', 'explanation', 'settings')
+      'username', 'from', 'to', 'subject', 'body', 'msglist',
+      'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
+      'compose', 'list', 'view', 'preferences',
+      'description', 'explanation', 'settings')
 
     dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
 
-
-    document.getElementById('tab-compose').addEventListener('selected', function (e) {
-      dom.to.focus()
-      updatecompose()
-    })
-    document.getElementById('tab-list').addEventListener('selected', function (e) {
+    dom.list.addEventListener('selected', function (e) {
       populateList()
       clearcompose()
     })
 
-    dom.view.addEventListener("reply", function (e) {
+    dom.view.addEventListener('reply', function (e) {
       // just reusing the event triggers an InvalidStateError.
       // so let's have a new one...
       var reply = new CustomEvent('reply', {
@@ -44,6 +38,9 @@ atc.setup.userInterface = function (atcO) {
       dom.compose.dispatchEvent(reply)
       dom.compose.dispatchEvent(select)
     })
+
+    dom.compose.addEventListener('toChanged', updateCompose)
+    dom.compose.addEventListener('send', sendmail)
 
     changeUser('Alice')
     updateDescription()
@@ -72,25 +69,22 @@ atc.setup.userInterface = function (atcO) {
     }
   }
 
-  function sendmail () {
-    if (addmail(dom.to.value, dom.subject.value, dom.body.value, dom.encrypted.checked)) {
-      clearcompose()
-      dom.list.dispatchEvent(select)
-      return false
-    } else {
-      return false
-    }
+  function sendmail (e) {
+    addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
+    dom.list.dispatchEvent(select)
   }
 
   function clearcompose () {
     dom.compose.dispatchEvent(new Event('clear'))
   }
 
-  function updatecompose () {
-    var e = new CustomEvent('update', {
-      detail: { client: client }
+  function updateCompose (e) {
+    var update = new CustomEvent('update', {
+      detail: {
+        toggle: client.encryptOptionTo(e.detail.to)
+      }
     })
-    dom.compose.dispatchEvent(e)
+    dom.compose.dispatchEvent(update)
   }
 
   function clickencrypted () {
@@ -261,15 +255,12 @@ atc.setup.userInterface = function (atcO) {
   document.addEventListener('DOMContentLoaded', setup)
 
   return {
-    setup: setup,
     updateDescription: updateDescription,
     switchuser: switchuser,
-    updatecompose: updatecompose,
     autocryptEnable: autocryptEnable,
     autocryptPreference: autocryptPreference,
     clickencrypted: clickencrypted,
-    more: more,
-    sendmail: sendmail
+    more: more
   }
 }
 

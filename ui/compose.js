@@ -2,19 +2,6 @@
   var dom;
   var pane;
 
-  // run when the dom is loaded
-  function setup (event) {
-    pane = document.getElementById('compose')
-    dom = getElements(
-      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation'
-      )
-    if (pane) {
-      pane.addEventListener('clear', clear, false)
-      pane.addEventListener('update', update, false)
-      pane.addEventListener('reply', reply, false)
-    }
-  }
-
   function clear (e) {
     dom.to.value = ''
     dom.body.value = ''
@@ -23,32 +10,24 @@
   }
 
   function update (e) {
-    var client = e.detail.client
-    var to = dom.to.value
-    var ac = client.getPeerAc(to)
+    var toggle = e.detail.toggle
 
-    if (!client.isEnabled()) {
-      if (ac.preferEncrypted) {
-        dom.encryptedRow.style.display = 'table-row'
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = 'enable Autocrypt to encrypt'
+    function enableCheckbox (enabled) {
+      var box = dom.encrypted
+      box.disabled = !enabled
+      if (enabled) {
+        box.parentElement.classList.remove('disabled')
       } else {
-        dom.encryptedRow.style.display = 'none'
-        dom.encrypted.checked = false
-      }
-    } else {
-      dom.encryptedRow.style.display = 'table-row'
-      if (ac.key !== undefined) {
-        dom.encrypted.checked = dom.encrypted.checked || ac.preferEncrypted
-        enablecheckbox(dom.encrypted, true)
-        dom.explanation.innerText = ''
-      } else {
-        dom.encrypted.checked = false
-        enablecheckbox(dom.encrypted, false)
-        if (to === '') { dom.explanation.innerText = 'please choose a recipient' } else { dom.explanation.innerText = 'If you want to encrypt to ' + to + ', ask ' + to + ' to enable Autocrypt and send you an e-mail' }
+        box.parentElement.classList.add('disabled')
       }
     }
+
+    dom.encryptedRow.style.display = toggle.visible ? 'table-row' : 'none'
+    enableCheckbox(toggle.enabled)
+    // On replies this may already be checked. So do not uncheck.
+    dom.encrypted.checked = dom.encrypted.checked || toggle.preferred
+    dom.explanation.innerText = toggle.explanation
+
   }
 
   function reply(e){
@@ -64,6 +43,24 @@
     dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
+  function send (){
+    emit('send', {
+      to: dom.to.value,
+      subject: dom.subject.value,
+      body: dom.body.value,
+      encrypted: dom.encrypted.checked
+    })
+  }
+
+  function toChanged (){
+    emit('toChanged', { to: dom.to.value })
+  }
+
+  function emit(name, detail){
+    var emitEvent = new CustomEvent(name, { detail: detail } )
+    pane.dispatchEvent(emitEvent)
+  }
+
   function getElements() {
     collection = {}
     for (id of arguments) {
@@ -72,9 +69,23 @@
     return collection
   }
 
-  function enablecheckbox (box, enabled) {
-    box.disabled = !enabled
-    if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
+  // run when the dom is loaded
+  function setup (event) {
+    pane = document.getElementById('compose')
+    dom = getElements(
+      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation',
+      'send'
+      )
+    if (pane) {
+      pane.addEventListener('clear', clear, false)
+      pane.addEventListener('update', update, false)
+      pane.addEventListener('reply', reply, false)
+      pane.addEventListener("selected", dom.to.focus, false)
+      pane.addEventListener("selected", toChanged, false)
+    }
+
+    dom.send.addEventListener('click', send, false)
+    dom.to.addEventListener('change', toChanged, false)
   }
 
   document.addEventListener("DOMContentLoaded", setup)

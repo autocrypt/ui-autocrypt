@@ -75,6 +75,42 @@ function clients () {
       return autocrypt.enabled
     }
 
+    function encryptOptionTo (recipient) {
+      var peer = getPeerAc(recipient)
+      var toggle = {
+        visible: true,
+        enabled: true,
+        preferred: false,
+        explanation: ''
+      }
+      if (!isEnabled()) {
+        if (peer.preferEncrypted) {
+          toggle.explanation = 'enable Autocrypt to encrypt'
+        }
+        else {
+          toggle.visible = false
+          toggle.enabled = false
+        }
+      }
+      else {
+        if (peer.key) {
+          toggle.preferred = peer.preferEncrypted
+        }
+        else {
+          toggle.enabled = false
+          if (recipient === '') {
+            toggle.explanation = 'please choose a recipient'
+          }
+          else {
+            toggle.explanation = 'If you want to encrypt to ' + recipient +
+              ', ask ' + recipient +
+              ' to enable Autocrypt and send you an e-mail'
+          }
+        }
+      }
+      return toggle
+    }
+
     return {
       autocrypt: autocrypt,
       processIncoming: processIncoming,
@@ -82,7 +118,8 @@ function clients () {
       getPeerAc: getPeerAc,
       enable: enable,
       isEnabled: isEnabled,
-      selfSyncAutocryptState: selfSyncAutocryptState
+      selfSyncAutocryptState: selfSyncAutocryptState,
+      encryptOptionTo: encryptOptionTo
     }
   }
 

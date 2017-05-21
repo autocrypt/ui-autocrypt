@@ -1,4 +1,3 @@
-/* globals localStorage */
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
 atc.setup.createMailStore = function () {

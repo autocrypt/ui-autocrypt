@@ -1,14 +1,12 @@
+/* globals atc, Tests */
 /* unit test for users */
-/* globals users */
 
-(function () {
-  var describe = Tests.describe
-
+(function userTests (atcO, describe) {
   describe('Users', function (it, assert) {
     var us
 
     this.setup = function () {
-      us = users()
+      us = atcO.setup.users()
       us.add('Alice', 'green')
       us.add('Bob', 'darkorange')
     }
@@ -46,4 +44,5 @@
       assert.notEqual(id, us.current().id)
     })
   })
-})()
+})(atc, Tests.describe)
+

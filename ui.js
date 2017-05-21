@@ -1,13 +1,15 @@
-/* global messages addmail confirm client user us */
-console.log('ui v0.0.6')
+/* global messages addmail confirm client Event CustomEvent changeUser */
 
-function userInterface () {
+if (!atc) var atc = {}
+if (!atc.setup) atc.setup = {}
+
+atc.setup.userInterface = function () {
   var dom = {}
   var select = new Event('select')
 
-  function getElements() {
-    collection = {}
-    for (id of arguments) {
+  function getElements () {
+    var collection = {}
+    for (var id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
@@ -20,13 +22,13 @@ function userInterface () {
         'compose', 'list', 'view', 'preferences',
         'description', 'explanation', 'settings')
 
-    dom.list.addEventListener("selected", function (e) {
+    dom.list.addEventListener('selected', function (e) {
       clearCompose()
       populateList()
     })
-    dom.list.addEventListener("showMessage", showMessage)
+    dom.list.addEventListener('showMessage', showMessage)
 
-    dom.view.addEventListener("reply", function (e) {
+    dom.view.addEventListener('reply', function (e) {
       // just reusing the event triggers an InvalidStateError.
       // so let's have a new one...
       var reply = new CustomEvent('reply', {
@@ -36,8 +38,8 @@ function userInterface () {
       dom.compose.dispatchEvent(select)
     })
 
-    dom.compose.addEventListener("toChanged", updateCompose)
-    dom.compose.addEventListener("send", sendmail)
+    dom.compose.addEventListener('toChanged', updateCompose)
+    dom.compose.addEventListener('send', sendmail)
 
     changeUser('Alice')
     updateDescription()
@@ -139,7 +141,6 @@ function userInterface () {
     } else {
       delete client.autocrypt.preferEncrypted
     }
-    console.log('prefer encrypted set to:', client.autocrypt.preferEncrypted)
     client.selfSyncAutocryptState()
     updateDescription()
   }
@@ -196,7 +197,9 @@ function userInterface () {
     }
   }
 
-  document.addEventListener("DOMContentLoaded", setup)
+  // push setup in the inits for the DOM ready event
+  if (!atc.setup.inits) atc.setup.inits = []
+  atc.setup.inits.push({name: 'setup ui', setup: setup})
 
   return {
     updateDescription: updateDescription,
@@ -206,15 +209,4 @@ function userInterface () {
     clickencrypted: clickencrypted,
     more: more
   }
-}
-
-function why () {
-  console.log('why placeholder')
-}
-
-// exports the module if in a common.js env
-if (typeof module === 'object' && module.exports) {
-  module.exports = userInterface
-} else {
-  window.userInterface = userInterface
 }

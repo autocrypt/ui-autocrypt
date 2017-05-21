@@ -1,8 +1,8 @@
-/* global Tests ui localStorage resetClient changeUser */
+/* global Tests Event localStorage resetClient changeUser */
 (function () {
   var describe = Tests.describe
 
-  function click(id) {
+  function click (id) {
     document.getElementById(id).click()
   }
 
@@ -38,7 +38,9 @@
     }
 
     this.setup = function () {
-      localStorage.clear()
+      try {
+        localStorage.clear()
+      } catch (err) {}
       resetClient()
       changeUser('alice')
     }

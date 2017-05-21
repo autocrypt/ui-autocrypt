@@ -1,6 +1,7 @@
+/* globals atc CustomEvent messages */
 (function () {
-  var dom;
-  var pane;
+  var dom
+  var pane
 
   function populate (e) {
     var messages = e.detail.messages
@@ -8,8 +9,7 @@
     appendMessages(messages)
     if (messages.length) {
       showMessages()
-    }
-    else {
+    } else {
       showMessageReplacement()
     }
   }
@@ -67,7 +67,7 @@
     dom.msgtable.style.display = 'table'
   }
 
-  function showMessageReplacement() {
+  function showMessageReplacement () {
     dom.listReplacement.style.display = 'block'
     dom.msgtable.style.display = 'none'
   }
@@ -83,14 +83,14 @@
     return lock
   }
 
-  function emit(name, detail){
-    var emitEvent = new CustomEvent(name, { detail: detail } )
+  function emit (name, detail) {
+    var emitEvent = new CustomEvent(name, { detail: detail })
     pane.dispatchEvent(emitEvent)
   }
 
-  function getElements() {
-    collection = {}
-    for (id of arguments) {
+  function getElements () {
+    var collection = {}
+    for (var id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
@@ -106,7 +106,6 @@
       pane.addEventListener('populate', populate, false)
     }
   }
-
-  document.addEventListener("DOMContentLoaded", setup)
-
+  if (!atc.setup.inits) atc.setup.inits = []
+  atc.setup.inits.push({name: 'setup list', setup: setup})
 })()

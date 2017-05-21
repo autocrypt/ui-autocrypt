@@ -4,11 +4,11 @@ var Tests = (function () {
   var failures = 0
 
   function log (message) {
-    console.log('%c ' + message, 'color: #444')
+    console.log('%c' + message, 'color: #444')
   }
 
   function fail (message) {
-    console.log('%c ' + message, 'color: red')
+    console.log('%c' + message, 'color: red')
   }
 
   function assert (truth, message) {
@@ -24,6 +24,16 @@ var Tests = (function () {
         'Expected "' + observed + '" to be "' + expected + '".')
   }
 
+  assert.ok = function (observed) {
+    assert(observed === true,
+      'Expected "' + observed + '" to be true."')
+  }
+
+  assert.exist = function (key, obj) {
+    if (typeof obj !== 'object') fail('expected an object, got a', typeof observed)
+    assert(obj[key] !== undefined,
+        'key' + key + 'does not exists')
+  }
   assert.notEqual = function (unexpected, observed) {
     assert(observed !== unexpected,
         'Expected somethign else than "' + unexpected + '".')
@@ -59,7 +69,7 @@ var Tests = (function () {
       await run.bind(env)()
       if (teardown) teardown()
     };
-    return (assertions + ' assertions. ' + failures + ' failures.')
+    return console.log('%c' + assertions + ' assertions. ' + '%c' + failures + ' failures.', 'color: green', 'color: red')
   };
 
   function describe (context, fun) {

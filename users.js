@@ -1,4 +1,6 @@
-function users () {
+if (!atc) var atc = {}
+if (!atc.setup) atc.setup = {}
+atc.setup.users = function () {
   var storage = {}
   var currentId
 
@@ -40,4 +42,9 @@ function users () {
     current: current,
     select: select
   }
+}
+
+// exports the module if in a common.js env
+if (typeof module === 'object' && module.exports) {
+  module.exports = atc.setup.users
 }

@@ -1,5 +1,5 @@
 /* unit test for clients */
-/* globals clients */
+/* globals atc Tests */
 
 (function () {
   var describe = Tests.describe
@@ -8,7 +8,7 @@
     var client
 
     this.setup = function () {
-      client = clients().get('me')
+      client = atc.setup.clients().get('me')
     }
 
     it('starts blank', function () {
@@ -21,6 +21,5 @@
       assert((client.makeHeader() !== undefined),
           'Enabled clients has an autocrypt header')
     })
-
   })
 })()

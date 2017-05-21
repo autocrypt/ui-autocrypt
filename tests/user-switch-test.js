@@ -1,4 +1,4 @@
-/* global Tests switchuser */
+/* global Tests changeUser */
 (function () {
   var describe = Tests.describe
 

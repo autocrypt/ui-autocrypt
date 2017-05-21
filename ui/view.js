@@ -1,6 +1,7 @@
+/* globals atc us CustomEvent */
 (function () {
-  var dom;
-  var pane;
+  var dom
+  var pane
 
   // run when the dom is loaded
   function setup (event) {
@@ -15,7 +16,7 @@
     }
   }
 
-  function show(e) {
+  function show (e) {
     var msg = e.detail.message
     dom.from.innerText = msg.from
     dom.to.innerText = msg.to
@@ -42,30 +43,29 @@
 
   function getEncryptionStatusNode (encrypted) {
     var x = document.createElement('span')
-      if (encrypted) {
-        let sub = document.createElement('span')
-        let lock = document.createElement('img')
-        lock.src = 'assets/images/emblem-readonly.png'
-        x.appendChild(lock)
-        sub.innerText = 'Message was encrypted'
-        x.appendChild(sub)
-      } else {
-        x.innerText = 'Message was not encrypted'
-      }
+    if (encrypted) {
+      let sub = document.createElement('span')
+      let lock = document.createElement('img')
+      lock.src = 'assets/images/emblem-readonly.png'
+      x.appendChild(lock)
+      sub.innerText = 'Message was encrypted'
+      x.appendChild(sub)
+    } else {
+      x.innerText = 'Message was not encrypted'
+    }
 
     return x
   }
 
-  function getViewElements() {
-    collection = {}
-    for (id of arguments) {
+  function getViewElements () {
+    var collection = {}
+    for (var id of arguments) {
       let key = id.toLowerCase()
-        let domId = 'view'+id
-        collection[key] = document.getElementById(domId)
+      let domId = 'view' + id
+      collection[key] = document.getElementById(domId)
     }
     return collection
   }
-
-  document.addEventListener("DOMContentLoaded", setup)
-
+  if (!atc.setup.inits) atc.setup.inits = []
+  atc.setup.inits.push({name: 'setup view', setup: setup})
 })()

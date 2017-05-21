@@ -6,7 +6,9 @@
  * might want to expand this to mails on the client etc.
  *
  * */
-function clients () {
+if (!atc) var atc = {}
+if (!atc.setup) atc.setup = {}
+atc.setup.clients = function () {
   var storage = {}
 
   function get (id) {
@@ -77,7 +79,7 @@ function clients () {
 
     function encryptOptionTo (recipient) {
       var peer = getPeerAc(recipient)
-      function explanation() {
+      function explanation () {
         if (isEnabled()) {
           if (peer.key) { return }
           if (recipient === '') {

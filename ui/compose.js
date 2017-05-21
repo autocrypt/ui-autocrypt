@@ -1,6 +1,7 @@
+/* globals atc CustomEvent */
 (function () {
-  var dom;
-  var pane;
+  var dom
+  var pane
 
   function clear (e) {
     dom.to.value = ''
@@ -29,7 +30,7 @@
     dom.explanation.innerText = toggle.explanation
   }
 
-  function reply(e){
+  function reply (e) {
     var msg = e.detail.message
 
     function indent (str) {
@@ -42,7 +43,7 @@
     dom.encrypted.checked = dom.encrypted.checked || msg.encrypted
   }
 
-  function send (){
+  function send () {
     emit('send', {
       to: dom.to.value,
       subject: dom.subject.value,
@@ -51,18 +52,18 @@
     })
   }
 
-  function toChanged (){
+  function toChanged () {
     emit('toChanged', { to: dom.to.value })
   }
 
-  function emit(name, detail){
-    var emitEvent = new CustomEvent(name, { detail: detail } )
+  function emit (name, detail) {
+    var emitEvent = new CustomEvent(name, { detail: detail })
     pane.dispatchEvent(emitEvent)
   }
 
-  function getElements() {
-    collection = {}
-    for (id of arguments) {
+  function getElements () {
+    var collection = {}
+    for (var id of arguments) {
       collection[id] = document.getElementById(id)
     }
     return collection
@@ -79,8 +80,8 @@
       pane.addEventListener('clear', clear, false)
       pane.addEventListener('update', update, false)
       pane.addEventListener('reply', reply, false)
-      pane.addEventListener("selected", dom.to.focus, false)
-      pane.addEventListener("selected", toChanged, false)
+      pane.addEventListener('selected', dom.to.focus, false)
+      pane.addEventListener('selected', toChanged, false)
     }
 
     dom.send.addEventListener('click', send, false)
@@ -90,7 +91,6 @@
     lock.src = 'assets/images/emblem-readonly.png'
     dom.encrypted.parentNode.insertBefore(lock, dom.encrypted)
   }
-
-  document.addEventListener("DOMContentLoaded", setup)
-
+  if (!atc.setup.inits) atc.setup.inits = []
+  atc.setup.inits.push({name: 'setup compose', setup: setup})
 })()

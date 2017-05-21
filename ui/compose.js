@@ -10,15 +10,7 @@
   }
 
   function update (e) {
-    var to = dom.to.value
-    var client = e.detail.client
-    var peer = e.detail.peer
-    var toggle = {
-      visible: true,
-      enabled: true,
-      preferred: false,
-      explanation: ''
-    }
+    var toggle = e.detail.toggle
 
     function enableCheckbox (enabled) {
       var box = dom.encrypted
@@ -30,31 +22,6 @@
       }
     }
 
-    if (!client.isEnabled()) {
-      if (peer.preferEncrypted) {
-        toggle.explanation = 'enable Autocrypt to encrypt'
-      }
-      else {
-        toggle.visible = false
-        toggle.enabled = false
-      }
-    }
-    else {
-      dom.encryptedRow.style.display = 'table-row'
-      if (peer.key) {
-        toggle.preferred = peer.preferEncrypted
-      }
-      else {
-        toggle.enabled = false
-        if (to === '') {
-          toggle.explanation = 'please choose a recipient'
-        }
-        else {
-          toggle.explanation = 'If you want to encrypt to ' + to +
-            ', ask ' + to + ' to enable Autocrypt and send you an e-mail'
-        }
-      }
-    }
     dom.encryptedRow.style.display = toggle.visible ? 'table-row' : 'none'
     enableCheckbox(toggle.enabled)
     // On replies this may already be checked. So do not uncheck.

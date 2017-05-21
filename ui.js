@@ -80,8 +80,7 @@ function userInterface () {
   function updateCompose (e) {
     var update = new CustomEvent('update', {
       detail: {
-        client: client,
-        peer: client.getPeerAc(e.detail.to)
+        toggle: client.encryptOptionTo(e.detail.to)
       }
     })
     dom.compose.dispatchEvent(update)

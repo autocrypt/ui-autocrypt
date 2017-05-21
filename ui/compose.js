@@ -13,7 +13,12 @@
     var to = dom.to.value
     var client = e.detail.client
     var peer = e.detail.peer
-    var toggle = {}
+    var toggle = {
+      visible: true,
+      enabled: true,
+      preferred: false,
+      explanation: ''
+    }
 
     function enableCheckbox (enabled) {
       var box = dom.encrypted
@@ -27,28 +32,19 @@
 
     if (!client.isEnabled()) {
       if (peer.preferEncrypted) {
-        toggle.visible = true
-        toggle.checked = false
-        toggle.enabled = true
         toggle.explanation = 'enable Autocrypt to encrypt'
       }
       else {
         toggle.visible = false
-        toggle.checked = false
         toggle.enabled = false
-        toggle.explanation = ''
       }
     }
     else {
-      toggle.visible = true
       dom.encryptedRow.style.display = 'table-row'
       if (peer.key) {
-        toggle.checked = dom.encrypted.checked || peer.preferEncrypted
-        toggle.enabled = true
-        toggle.explanation = ''
+        toggle.preferred = peer.preferEncrypted
       }
       else {
-        toggle.checked = false
         toggle.enabled = false
         if (to === '') {
           toggle.explanation = 'please choose a recipient'
@@ -61,7 +57,8 @@
     }
     dom.encryptedRow.style.display = toggle.visible ? 'table-row' : 'none'
     enableCheckbox(toggle.enabled)
-    dom.encrypted.checked = toggle.checked
+    // On replies this may already be checked. So do not uncheck.
+    dom.encrypted.checked = dom.encrypted.checked || toggle.preferred
     dom.explanation.innerText = toggle.explanation
 
   }

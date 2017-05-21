@@ -4,7 +4,6 @@
 
   // run when the dom is loaded
   function setup (event) {
-    console.log('compose setup')
     pane = document.getElementById('compose')
     dom = getElements(
       'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation'

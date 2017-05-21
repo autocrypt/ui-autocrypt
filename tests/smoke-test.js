@@ -38,7 +38,9 @@
     }
 
     this.setup = function () {
-      localStorage.clear()
+      try {
+        localStorage.clear()
+      } catch (err) {}
       resetClient()
       changeUser('alice')
     }

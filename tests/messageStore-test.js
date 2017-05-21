@@ -37,7 +37,6 @@ function msgTests (atcO, describe) {
 
     it('get the mail of an existing user', function () {
       var mails = msgs.getMail(uName)
-      console.log(mails)
     })
   })
 }

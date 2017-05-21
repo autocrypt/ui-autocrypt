@@ -1,7 +1,19 @@
-/* globals  */
+/* globals localStorage */
 if (!atc) var atc = {}
 atc.provider = (function () {
   var boxes = {}
+
+  var storage = (function () {
+    var uid = new Date()
+    var result
+    try {
+      localStorage.setItem(uid, uid)
+      result = localStorage.getItem(uid) == uid // == intended here use === to test if false
+      localStorage.removeItem(uid)
+      return result && localStorage
+    } catch (exception) { return false /* some brower throw */ }
+  }())
+
   function send (msg) {
     atc.msgs.sendMail(msg)
     var outbox = getMsgs(msg.from)
@@ -36,7 +48,8 @@ atc.provider = (function () {
   return {
     send: send,
     reload: reload,
-    boxes: boxes
+    boxes: boxes,
+    storage: storage
   }
 }())
 

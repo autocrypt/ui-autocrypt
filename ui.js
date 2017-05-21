@@ -2,7 +2,6 @@
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
 atc.setup.userInterface = function (atcO) {
-  console.log('autocrypt ui setup v0.0.7')
   var dom = {}
 
   // var panes = atcO.uiPanes()

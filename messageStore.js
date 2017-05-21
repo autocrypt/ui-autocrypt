@@ -3,16 +3,7 @@ if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
 atc.setup.createMailStore = function () {
   // test for local storage and make a ref to it if true
-  var storage = (function () {
-    var uid = new Date()
-    var result
-    try {
-      localStorage.setItem(uid, uid)
-      result = localStorage.getItem(uid) == uid // == intended here use === to test if false
-      localStorage.removeItem(uid)
-      return result && localStorage
-    } catch (exception) { return false /* some brower throw */ }
-  }())
+  var storage = atc.provider.storage
 
 
   var usersMailsStore = {}
@@ -24,27 +15,21 @@ atc.setup.createMailStore = function () {
       usersMailsStore[key] = userData
     }
   }
-  console.log(storage)
 
   function createUser (user) {
     var uName = user.toLowerCase()
-    if (!usersMailsStore[uName]) usersMailsStore[uName] = createUserStore()
-    else {
-      console.log('userExist', uName)
-    }
+    if (usersMailsStore[uName]) return
+    usersMailsStore[uName] = createUserStore()
   }
 
   function createUserStore (uName) {
-    var store
     if (storage && storage[uName] !== undefined) {
-      store = locGet(uName, storage)
-    } else store = {inbox: [], outbox: []}
-    return store
+      return locGet(uName, storage)
+    } else return {inbox: [], outbox: []}
   }
 
   function locSet (user, data, locStore) {
     locStore.setItem(user.toLowerCase(), JSON.stringify(data))
-    console.log(locStore)
   }
   function locGet (user, locStore) {
     return JSON.parse(locStore[user.toLowerCase()])
@@ -52,10 +37,8 @@ atc.setup.createMailStore = function () {
 
   function getMails (user) {
     var uName = user.toLowerCase()
-    if (!usersMailsStore[uName]) {
-      console.log('newUserMail')
-      return createUserStore(uName)
-    } else return usersMailsStore[uName]
+    if (!usersMailsStore[uName]) return createUserStore(uName)
+    else return usersMailsStore[uName]
   }
 
   function sendMail (msg) {

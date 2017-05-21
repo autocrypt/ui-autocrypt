@@ -43,11 +43,11 @@
         }
     }
     panes[choice].style.display = 'block'
+    panes[choice].dispatchEvent(selected)
     var n = 'tab-' + choice
     e = document.getElementById(n)
     if (e) {
       e.classList.add('selected')
-      e.dispatchEvent(selected)
     }
   }
 

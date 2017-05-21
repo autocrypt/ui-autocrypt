@@ -10,16 +10,17 @@
   }
 
   function update (e) {
-    var client = e.detail.client
     var to = dom.to.value
-    var ac = client.getPeerAc(to)
+    var client = e.detail.client
+    var peer = e.detail.peer
+
     function enablecheckbox (box, enabled) {
       box.disabled = !enabled
         if (enabled) { box.parentElement.classList.remove('disabled') } else { box.parentElement.classList.add('disabled') }
     }
 
     if (!client.isEnabled()) {
-      if (ac.preferEncrypted) {
+      if (peer.preferEncrypted) {
         dom.encryptedRow.style.display = 'table-row'
         dom.encrypted.checked = false
         enablecheckbox(dom.encrypted, true)
@@ -30,8 +31,8 @@
       }
     } else {
       dom.encryptedRow.style.display = 'table-row'
-      if (ac.key !== undefined) {
-        dom.encrypted.checked = dom.encrypted.checked || ac.preferEncrypted
+      if (peer.key !== undefined) {
+        dom.encrypted.checked = dom.encrypted.checked || peer.preferEncrypted
         enablecheckbox(dom.encrypted, true)
         dom.explanation.innerText = ''
       } else {
@@ -56,13 +57,21 @@
   }
 
   function send (){
-    var sendEvent = new CustomEvent('send', { detail: {
+    emit('send', {
       to: dom.to.value,
       subject: dom.subject.value,
       body: dom.body.value,
       encrypted: dom.encrypted.checked
-    }})
-    pane.dispatchEvent(sendEvent)
+    })
+  }
+
+  function toChanged (){
+    emit('toChanged', { to: dom.to.value })
+  }
+
+  function emit(name, detail){
+    var emitEvent = new CustomEvent(name, { detail: detail } )
+    pane.dispatchEvent(emitEvent)
   }
 
   function getElements() {
@@ -84,9 +93,12 @@
       pane.addEventListener('clear', clear, false)
       pane.addEventListener('update', update, false)
       pane.addEventListener('reply', reply, false)
+      pane.addEventListener("selected", dom.to.focus, false)
+      pane.addEventListener("selected", toChanged, false)
     }
 
     dom.send.addEventListener('click', send, false)
+    dom.to.addEventListener('change', toChanged, false)
   }
 
   document.addEventListener("DOMContentLoaded", setup)

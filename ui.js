@@ -23,12 +23,7 @@ function userInterface () {
 
     dom.encrypted.parentNode.insertBefore(img('lock'), dom.encrypted)
 
-
-    document.getElementById('tab-compose').addEventListener("selected", function (e) {
-      dom.to.focus()
-      updatecompose()
-    })
-    document.getElementById('tab-list').addEventListener("selected", function (e) {
+    dom.list.addEventListener("selected", function (e) {
       populateList()
       clearcompose()
     })
@@ -43,6 +38,7 @@ function userInterface () {
       dom.compose.dispatchEvent(select)
     })
 
+    dom.compose.addEventListener("toChanged", updateCompose)
     dom.compose.addEventListener("send", sendmail)
 
     changeUser('Alice')
@@ -81,11 +77,14 @@ function userInterface () {
     dom.compose.dispatchEvent(new Event('clear'))
   }
 
-  function updatecompose () {
-    var e = new CustomEvent('update', {
-      detail: { client: client }
+  function updateCompose (e) {
+    var update = new CustomEvent('update', {
+      detail: {
+        client: client,
+        peer: client.getPeerAc(e.detail.to)
+      }
     })
-    dom.compose.dispatchEvent(e)
+    dom.compose.dispatchEvent(update)
   }
 
   function clickencrypted () {
@@ -258,7 +257,6 @@ function userInterface () {
   return {
     updateDescription: updateDescription,
     switchuser: switchuser,
-    updatecompose: updatecompose,
     autocryptEnable: autocryptEnable,
     autocryptPreference: autocryptPreference,
     clickencrypted: clickencrypted,

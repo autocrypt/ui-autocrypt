@@ -1,4 +1,4 @@
-/* globals atc CustomEvent messages */
+/* globals atc CustomEvent */
 (function () {
   var dom
   var pane
@@ -20,7 +20,7 @@
     }
   }
 
-  function appendMessages () {
+  function appendMessages (messages) {
     for (let message of messages) {
       dom.msglist.appendChild(generateListEntryFromMsg(message))
     }

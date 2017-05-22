@@ -5,7 +5,10 @@
   describe('User switch', function (it, assert) {
     var usertoggle = document.getElementById('usertoggle')
     this.setup = function () {
-      changeUser('Alice')
+      resetClient()
+      // make sure user display is okay and we are set on alice
+      usertoggle.click()
+      usertoggle.click()
     }
     it('starts with Alice', function () {
       assert.content('Alice', 'username')

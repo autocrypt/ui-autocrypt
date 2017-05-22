@@ -59,13 +59,15 @@ var Tests = (function () {
     if (arr.length === 0) return
     for (let suite of arr) {
       var name = suite[0]
-      var desc = suite[1]
+      var fun = suite[1]
       var env = {specs: {}, prefix: prefix + '  '}
       log(prefix + name)
       if (setup) setup()
-            // run the described test if there is one
-      await desc.bind(env)(describe.bind(env), assert)
-            // recurse
+      // run the description block.
+      // It's either a test that will be run right away
+      // Or its a nested descripion that will seed the specs in env
+      await fun.bind(env)(describe.bind(env), assert)
+      // recurse
       await run.bind(env)()
       if (teardown) teardown()
     };

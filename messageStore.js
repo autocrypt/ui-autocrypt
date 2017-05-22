@@ -31,7 +31,9 @@ atc.setup.createMailStore = function () {
     locStore.setItem(user.toLowerCase(), JSON.stringify(data))
   }
   function locGet (user, locStore) {
-    return JSON.parse(locStore[user.toLowerCase()])
+    if (locStore.getItem(user.toLowerCase()) !== null) {
+      return JSON.parse(locStore[user.toLowerCase()])
+    }
   }
 
   function getMails (user) {

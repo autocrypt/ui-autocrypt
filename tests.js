@@ -69,8 +69,18 @@ var Tests = (function () {
       await run.bind(env)()
       if (teardown) teardown()
     };
-    return console.log('%c' + assertions + ' assertions. ' + '%c' + failures + ' failures.', 'color: green', 'color: red')
+    console.log(report(), 'color: green', 'color: red')
+    return report()
   };
+
+  function report () {
+    if (failures > 0) {
+      return '%c' + assertions + ' assertions. ' + '%c' + failures + ' failures.'
+    }
+    else {
+      return '%c' + assertions + ' assertions. %c'
+    }
+  }
 
   function describe (context, fun) {
     this.specs[context] = fun

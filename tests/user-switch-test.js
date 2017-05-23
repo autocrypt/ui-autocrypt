@@ -1,11 +1,11 @@
-/* global Tests changeUser */
+/* global Tests */
 (function () {
   var describe = Tests.describe
 
   describe('User switch', function (it, assert) {
     var usertoggle = document.getElementById('usertoggle')
     this.setup = function () {
-      resetClient()
+      atc.ac.resetClient()
       // make sure user display is okay and we are set on alice
       usertoggle.click()
       usertoggle.click()

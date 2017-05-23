@@ -4,15 +4,15 @@
         <script type="text/javascript" src="providers/provider.js"></script>
         <script type="text/javascript" src="users.js"></script>
         <script type="text/javascript" src="ui.js"></script>
+        <script type="text/javascript" src="clients.js"></script>
+        <script type="text/javascript" src="messageStore.js"></script>
+        <script type="text/javascript" src="autocrypt.js"></script>
+        <script type="text/javascript" src="init.js"></script>
         <script type="text/javascript" src="ui/panes.js"></script>
         <script type="text/javascript" src="ui/compose.js"></script>
         <script type="text/javascript" src="ui/list.js"></script>
         <script type="text/javascript" src="ui/view.js"></script>
         <script type="text/javascript" src="ui/users.js"></script>
-        <script type="text/javascript" src="clients.js"></script>
-        <script type="text/javascript" src="autocrypt.js"></script>
-        <script type="text/javascript" src="messageStore.js"></script>
-        <script type="text/javascript" src="init.js"></script>
         <script type="text/javascript" src="tests.js"></script>
         <script type="text/javascript" src="tests/user-switch-test.js"></script>
         <script type="text/javascript" src="tests/users-test.js"></script>
@@ -43,7 +43,7 @@
                         <tr><th>From:</th><td id="from"></td></tr>
                         <tr><th>To:</th><td><input id="to" /></td></tr>
                         <tr><th>Subject:</th><td><input id="subject" /></td></tr>
-                        <tr id="encryptedRow"><td colspan="2"><label><input type="checkbox" onclick="return ui.clickencrypted();" id="encrypted">Encrypt</label><span id="explanation"></span></td></tr>
+                        <tr id="encryptedRow"><td colspan="2"><label><input type="checkbox" onclick="return atc.ui.clickencrypted();" id="encrypted">Encrypt</label><span id="explanation"></span></td></tr>
                         <tr><td id="compose-actions" colspan="2">
                                 <input type="button" id="send" value="Send"/>
                         </td></tr>
@@ -86,13 +86,13 @@
                         <label>[<input type="checkbox"
                                        value="enable"
                                        id="enable"
-                                       onclick="ui.autocryptEnable();"/>enable]</label>
+                                       onclick="atc.ui.autocryptEnable();"/>enable]</label>
                     </legend>
                     <div>Please enable Autocrypt on <em>only one</em> device. (<a href="#" onclick="return why();">why?</a>)
                     </div>
                     <hr />
                     <div id="more">
-                        <a id="showmore" href="#" onclick="return ui.more();">more...</a>
+                        <a id="showmore" href="#" onclick="return atc.ui.more();">more...</a>
                     </div>
                     <div id="settings">
                         <label>
@@ -100,7 +100,7 @@
                                    value="yes"
                                    name="prefer"
                                    id="yes"
-                                   onclick="ui.autocryptPreference('yes');"/>
+                                   onclick="atc.ui.autocryptPreference('yes');"/>
                             I prefer to receive encrypted mail.
                         </label>
                         <br/>
@@ -109,7 +109,7 @@
                                    value="yes"
                                    name="prefer"
                                    id="no"
-                                   onclick="ui.autocryptPreference('no');"/>
+                                   onclick="atc.ui.autocryptPreference('no');"/>
                             I prefer not to receive encrypted mail.
                         </label>
                     </div>

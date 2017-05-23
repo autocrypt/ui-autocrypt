@@ -27,6 +27,10 @@ atc.provider = (function () {
     this.receive(msg)
     return true
   }
+  function receive (msg) {
+    atc.client.processIncoming(msg)
+    atc.msgs.messages.push(msg)
+  }
 
   function reload (name) {
     for (var x in getMsgs(name)) {
@@ -45,11 +49,27 @@ atc.provider = (function () {
   //   console.log('event:sendMsg', e.detail)
   // }, false)
 
+  function addmail (to, subj, body, encrypted) {
+    var msg = {
+      from: atc.us.current().name,
+      to: to,
+      subject: subj,
+      body: body,
+      encrypted: encrypted,
+      autocrypt: atc.client.makeHeader(),
+      date: new Date()
+    }
+    atc.provider.send(msg)
+    return true
+  }
+
   return {
     send: send,
     reload: reload,
     boxes: boxes,
-    storage: storage
+    storage: storage,
+    addmail: addmail,
+    receive: receive
   }
 }())
 

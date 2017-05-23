@@ -45,7 +45,7 @@
       try {
         localStorage.clear()
       } catch (err) {}
-      resetClient()
+      atc.ac.resetClient()
       // make sure user display is okay and we are set on alice
       switchUser()
       switchUser()

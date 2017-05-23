@@ -71,17 +71,13 @@ var Tests = (function () {
       await run.bind(env)()
       if (teardown) teardown()
     };
-    console.log(report(), 'color: green', 'color: red')
     return report()
   };
 
   function report () {
     if (failures > 0) {
-      return '%c' + assertions + ' assertions. ' + '%c' + failures + ' failures.'
-    }
-    else {
-      return '%c' + assertions + ' assertions. %c'
-    }
+      return console.log('%c' + assertions + ' assertions. ' + '%c' + failures + ' failures.', 'color: green', 'color: red')
+    } else return console.log('%c' + assertions + ' assertions. all ok !', 'color: green')
   }
 
   function describe (context, fun) {
@@ -91,7 +87,7 @@ var Tests = (function () {
   async function runTests () {
     assertions = 0
     failures = 0
-    console.log(await run.bind(env)())
+    await run.bind(env)()
   };
 
   return {

@@ -13,7 +13,12 @@ atc.provider = (function () {
       return result && localStorage
     } catch (exception) { return false /* some brower throw */ }
   }())
-
+  function clearStorage () {
+    if (storage) {
+      storage.clear()
+      console.log('storage cleared')
+    }
+  }
   function send (msg) {
     atc.msgs.sendMail(msg)
     var outbox = getMsgs(msg.from)
@@ -69,7 +74,8 @@ atc.provider = (function () {
     boxes: boxes,
     storage: storage,
     addmail: addmail,
-    receive: receive
+    receive: receive,
+    clearStorage: clearStorage
   }
 }())
 

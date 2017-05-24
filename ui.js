@@ -189,6 +189,7 @@ atc.setup.userInterface = function () {
     dom.username.dispatchEvent(selectUser)
     atc.client = atc.clients.get(user.id)
     atc.msgs.messages = []
+    console.log(atc.msgs.msgStore)
     atc.provider.reload(user.id)
 
     // TODO: use events on the relevant panes to achieve this.

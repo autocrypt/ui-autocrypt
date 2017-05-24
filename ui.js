@@ -1,4 +1,4 @@
-/* global messages addmail confirm client Event CustomEvent changeUser */
+/* global Event CustomEvent */
 
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
@@ -44,12 +44,15 @@ atc.setup.userInterface = function () {
     dom.username.addEventListener('toggled', changeUser)
 
     updateDescription()
-    setUser(us.current())
+    setUser(atc.us.current())
   }
 
   function showMessage (e) {
     var show = new CustomEvent('show', {
-      detail: e.detail
+      detail: {
+        message: e.detail.message,
+        viewer: atc.us.current()
+      }
     })
     var select = new Event('select')
     dom.view.dispatchEvent(show)
@@ -58,14 +61,14 @@ atc.setup.userInterface = function () {
 
   function populateList () {
     var populate = new CustomEvent('populate', {
-      detail: {messages: messages}
+      detail: {messages: atc.msgs.messages}
     })
     dom.list.dispatchEvent(populate)
   }
 
   function sendmail (e) {
     var select = new Event('select')
-    addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
+    atc.provider.addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
     dom.list.dispatchEvent(select)
   }
 
@@ -76,7 +79,7 @@ atc.setup.userInterface = function () {
   function updateCompose (e) {
     var update = new CustomEvent('update', {
       detail: {
-        toggle: client.encryptOptionTo(e.detail.to)
+        toggle: atc.client.encryptOptionTo(e.detail.to)
       }
     })
     dom.compose.dispatchEvent(update)
@@ -84,14 +87,14 @@ atc.setup.userInterface = function () {
 
   function clickencrypted () {
     var to = dom.to.value
-    var ac = client.getPeerAc(to)
+    var ac = atc.client.getPeerAc(to)
     var encrypted = dom.encrypted.checked
 
     // FIXME: if autocrypt is disabled and we've set encrypt, prompt the user about it.
-    if (encrypted && client.isEnabled === false) {
+    if (encrypted && atc.client.isEnabled === false) {
       if (confirm('Please only enable Autocrypt on one device.\n\n' +
           'Are you sure you want to enable Autocrypt on this device?')) {
-        client.enable(true)
+        atc.client.enable(true)
         setupprefs()
         updateDescription()
       } else {
@@ -99,7 +102,7 @@ atc.setup.userInterface = function () {
         encrypted = false
       }
     }
-    if (!client.isEnabled && !dom.encrypted.disabled) {
+    if (!atc.client.isEnabled && !dom.encrypted.disabled) {
       dom.explanation.innerText = 'enable Autocrypt to encrypt'
     } else if (encrypted && ac.preferEncrypted === false) {
       dom.explanation.innerText = to + ' prefers to receive unencrypted mail.  It might be hard for them to read.'
@@ -139,18 +142,18 @@ atc.setup.userInterface = function () {
     }
     dom[other].checked = false
     if (dom.yes.checked) {
-      client.autocrypt.preferEncrypted = true
+      atc.client.autocrypt.preferEncrypted = true
     } else if (dom.no.checked) {
-      client.autocrypt.preferEncrypted = false
+      atc.client.autocrypt.preferEncrypted = false
     } else {
-      delete client.autocrypt.preferEncrypted
+      delete atc.client.autocrypt.preferEncrypted
     }
-    client.selfSyncAutocryptState()
+    atc.client.selfSyncAutocryptState()
     updateDescription()
   }
 
   function autocryptEnable () {
-    client.enable(dom.enable.checked)
+    atc.client.enable(dom.enable.checked)
     updateDescription()
   }
 
@@ -177,9 +180,9 @@ atc.setup.userInterface = function () {
     dom.description.innerText = getDescription()
   }
 
-  function changeUser() {
-    us.next()
-    setUser(us.current())
+  function changeUser () {
+    atc.us.next()
+    setUser(atc.us.current())
   }
 
   function setUser (user) {
@@ -187,9 +190,8 @@ atc.setup.userInterface = function () {
     var select = new Event('select')
 
     dom.username.dispatchEvent(selectUser)
-
-    client = cs.get(user.id)
-    messages = []
+    atc.client = atc.clients.get(user.id)
+    atc.msgs.messages = []
     atc.provider.reload(user.id)
 
     // TODO: use events on the relevant panes to achieve this.
@@ -201,14 +203,14 @@ atc.setup.userInterface = function () {
   }
 
   function setupprefs () {
-    dom.enable.checked = client.isEnabled()
-    if (client.autocrypt.preferEncrypted === undefined) {
+    dom.enable.checked = atc.client.isEnabled()
+    if (atc.client.autocrypt.preferEncrypted === undefined) {
       dom.yes.checked = false
       dom.no.checked = false
-    } else if (client.autocrypt.preferEncrypted === true) {
+    } else if (atc.client.autocrypt.preferEncrypted === true) {
       dom.yes.checked = true
       dom.no.checked = false
-    } else if (client.autocrypt.preferEncrypted === false) {
+    } else if (atc.client.autocrypt.preferEncrypted === false) {
       dom.yes.checked = false
       dom.no.checked = true
     }

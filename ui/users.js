@@ -4,7 +4,7 @@
   var name    // #username - also used to emit events
   var toggle  // #usertoggle
 
-  function change(e) {
+  function change (e) {
     name.innerText = e.detail.name
     name.style.color = e.detail.color
   }

@@ -1,43 +1,23 @@
-/* globals   messages  clients client cs atc */
+/* globals  atc */
 // javascript implementation of essential Autocrypt UI
 // var provider = atc.volatileProvider()
-var ui = atc.setup.userInterface(atc)
-var us = atc.setup.users()
+// var ui = atc.setup.userInterface(atc)
+// var us = atc.setup.users()
 
-atc.setup.atc = function (atcO) {}
+atc.setup.atc = function (atcO) {
+  atc.msgs.messages = []
+  function resetClient () {
+    // messages for the current user
+    atcO.msgs.messages = []
 
-var autocryptSwitch = function (isEnabled) {
-  client.enable(isEnabled)
-}
+    atcO.us = atc.setup.users()
+    atcO.us.add('Alice', 'green')
+    atcO.us.add('Bob', 'darkorange')
 
-var addmail = function (to, subj, body, encrypted) {
-  var msg = {
-    from: us.current().name,
-    to: to,
-    subject: subj,
-    body: body,
-    encrypted: encrypted,
-    autocrypt: client.makeHeader(),
-    date: new Date()
+    atcO.clients = atc.setup.clients()
+    // cs = atc.setup.clients()
   }
-  atc.provider.send(msg)
-  return true
+  return {
+    resetClient: resetClient
+  }
 }
-
-atc.provider.receive = function (msg) {
-  client.processIncoming(msg)
-  messages.push(msg)
-}
-
-function resetClient (atcO) {
-  // messages for the current user
-  messages = []
-
-  us = atc.setup.users()
-  us.add('Alice', 'green')
-  us.add('Bob', 'darkorange')
-
-  cs = atc.setup.clients()
-};
-
-resetClient()

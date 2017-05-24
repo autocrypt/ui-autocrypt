@@ -49,7 +49,10 @@ atc.setup.userInterface = function () {
 
   function showMessage (e) {
     var show = new CustomEvent('show', {
-      detail: e.detail
+      detail: {
+        message: e.detail.message,
+        viewer: atc.us.current()
+      }
     })
     var select = new Event('select')
     dom.view.dispatchEvent(show)

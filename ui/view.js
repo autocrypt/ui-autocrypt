@@ -18,14 +18,13 @@
 
   function show (e) {
     var msg = e.detail.message
+    var usr = e.detail.viewer
     dom.from.innerText = msg.from
     dom.to.innerText = msg.to
     dom.subject.innerText = msg.subject
     dom.date.innerText = msg.date
     dom.body.innerText = msg.body
     dom.encrypted.replaceChild(getEncryptionStatusNode(msg.encrypted), dom.encrypted.childNodes[0])
-    // fix before refactor
-    var usr = us.current()
     dom.reply.onclick = function () { replyToMsg(msg) }
     if (msg.from === usr.name) {
       dom.reply.style.display = 'none'

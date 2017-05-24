@@ -10,23 +10,6 @@ var autocryptSwitch = function (isEnabled) {
   client.enable(isEnabled)
 }
 
-var changeUser = function (name) {
-  if (name) {
-    us.select(name)
-  } else {
-    us.next()
-  }
-  switchuser(us.current())
-  return false
-}
-
-var switchuser = function (user) {
-  client = cs.get(user.id)
-  messages = []
-  atc.provider.reload(user.id)
-  ui.switchuser(user)
-}
-
 var addmail = function (to, subj, body, encrypted) {
   var msg = {
     from: us.current().name,

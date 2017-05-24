@@ -5,7 +5,6 @@ if (!atc.setup) atc.setup = {}
 
 atc.setup.userInterface = function () {
   var dom = {}
-  var select = new Event('select')
 
   function getElements () {
     var collection = {}
@@ -34,6 +33,7 @@ atc.setup.userInterface = function () {
       var reply = new CustomEvent('reply', {
         detail: e.detail
       })
+      var select = new Event('select')
       dom.compose.dispatchEvent(reply)
       dom.compose.dispatchEvent(select)
     })
@@ -41,14 +41,17 @@ atc.setup.userInterface = function () {
     dom.compose.addEventListener('toChanged', updateCompose)
     dom.compose.addEventListener('send', sendmail)
 
-    changeUser('Alice')
+    dom.username.addEventListener('toggled', changeUser)
+
     updateDescription()
+    setUser(us.current())
   }
 
   function showMessage (e) {
     var show = new CustomEvent('show', {
       detail: e.detail
     })
+    var select = new Event('select')
     dom.view.dispatchEvent(show)
     dom.view.dispatchEvent(select)
   }
@@ -61,6 +64,7 @@ atc.setup.userInterface = function () {
   }
 
   function sendmail (e) {
+    var select = new Event('select')
     addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
     dom.list.dispatchEvent(select)
   }
@@ -173,9 +177,22 @@ atc.setup.userInterface = function () {
     dom.description.innerText = getDescription()
   }
 
-  function switchuser (user) {
-    dom.username.innerText = user.name
-    dom.username.style.color = user.color
+  function changeUser() {
+    us.next()
+    setUser(us.current())
+  }
+
+  function setUser (user) {
+    var selectUser = new CustomEvent('select', { detail: user })
+    var select = new Event('select')
+
+    dom.username.dispatchEvent(selectUser)
+
+    client = cs.get(user.id)
+    messages = []
+    atc.provider.reload(user.id)
+
+    // TODO: use events on the relevant panes to achieve this.
     dom.from.innerText = user.name
     setupprefs()
     dom.showmore.checked = false
@@ -203,7 +220,6 @@ atc.setup.userInterface = function () {
 
   return {
     updateDescription: updateDescription,
-    switchuser: switchuser,
     autocryptEnable: autocryptEnable,
     autocryptPreference: autocryptPreference,
     clickencrypted: clickencrypted,

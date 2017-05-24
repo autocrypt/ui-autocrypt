@@ -31,6 +31,10 @@
     click('send')
   }
 
+  function switchUser () {
+    click('usertoggle')
+  }
+
   describe('Smoke test', function (it, assert) {
     function assertHasEncryptedEmail () {
       click('tab-list')
@@ -42,15 +46,16 @@
         localStorage.clear()
       } catch (err) {}
       resetClient()
-      changeUser('alice')
+      // make sure user display is okay and we are set on alice
+      switchUser()
+      switchUser()
     }
 
     it('autocrypts when enabled', async function () {
-      changeUser('alice')
       enableAutocrypt()
       composeTo('Bob')
       send()
-      changeUser('bob')
+      switchUser()
       enableAutocrypt()
       composeTo('Alice')
             // work around a firefox bug that prevents clicking an

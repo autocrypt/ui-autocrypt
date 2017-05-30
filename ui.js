@@ -21,11 +21,11 @@ atc.setup.userInterface = function () {
         'compose', 'list', 'view', 'preferences',
         'explanation')
 
+    dom.list.addEventListener('showMessage', showMessage)
     dom.list.addEventListener('selected', function (e) {
       clearCompose()
       populateList()
     })
-    dom.list.addEventListener('showMessage', showMessage)
 
     dom.view.addEventListener('reply', function (e) {
       send(dom.compose, 'reply', e.detail)
@@ -57,15 +57,7 @@ atc.setup.userInterface = function () {
   }
 
   function togglePrefer(e) {
-    var prefer = e.detail.prefer
-    // TODO: move into client.autocrypt model
-    if (prefer === undefined) {
-      delete atc.client.autocrypt.preferEncrypted
-    }
-    else {
-      atc.client.autocrypt.preferEncrypted = prefer
-    }
-    atc.client.selfSyncAutocryptState()
+    atc.client.prefer(e.detail.prefer)
   }
 
   function toggleEnable(e) {
@@ -87,32 +79,23 @@ atc.setup.userInterface = function () {
     })
   }
 
-  function clickencrypted () {
-    var to = dom.to.value
-    var ac = atc.client.getPeerAc(to)
-    var encrypted = dom.encrypted.checked
+  function toggleEncrypted (e) {
+    var enc = e.detail
 
-    // FIXME: if autocrypt is disabled and we've set encrypt, prompt the user about it.
-    if (encrypted && atc.client.isEnabled === false) {
+    if (enc.checked && atc.client.isEnabled() === false) {
       if (confirm('Please only enable Autocrypt on one device.\n\n' +
           'Are you sure you want to enable Autocrypt on this device?')) {
         atc.client.enable(true)
-        setupprefs()
-        updateDescription()
+        send(dom.preferences, 'reset', atc.client)
       } else {
-        dom.encrypted.checked = false
-        encrypted = false
+        enc.checked = false
       }
     }
-    if (!atc.client.isEnabled && !dom.encrypted.disabled) {
-      dom.explanation.innerText = 'enable Autocrypt to encrypt'
-    } else if (encrypted && ac.preferEncrypted === false) {
-      dom.explanation.innerText = to + ' prefers to receive unencrypted mail.  It might be hard for them to read.'
-    } else if (!encrypted && ac.preferEncrypted === true) {
-      dom.explanation.innerText = to + ' prefers to receive encrypted mail!'
-    } else {
-      dom.explanation.innerText = ''
-    }
+
+    send(dom.compose, 'set', {
+      explanation: atc.client.explain(enc) || '',
+      checked: enc.checked
+    })
   }
 
   function changeUser () {
@@ -139,8 +122,4 @@ atc.setup.userInterface = function () {
   // push setup in the inits for the DOM ready event
   if (!atc.setup.inits) atc.setup.inits = []
   atc.setup.inits.push({name: 'setup ui', setup: setup})
-
-  return {
-    clickencrypted: clickencrypted,
-  }
 }

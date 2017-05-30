@@ -15,6 +15,11 @@
     dom.from.innerText = user.name
   }
 
+  function set (e) {
+    dom.explanation.innerText = e.detail.explanation
+    dom.encrypted.checked = e.detail.checked
+  }
+
   function update (e) {
     var toggle = e.detail.toggle
 
@@ -61,6 +66,15 @@
     emit('toChanged', { to: dom.to.value })
   }
 
+  function toggleEncrypted () {
+    emit('toggleEncrypted', {
+      to: dom.to.value,
+      checked: dom.encrypted.checked,
+      disabled: dom.encrypted.disabled
+    })
+  }
+
+
   function emit (name, detail) {
     var emitEvent = new CustomEvent(name, { detail: detail })
     pane.dispatchEvent(emitEvent)
@@ -86,11 +100,13 @@
       pane.addEventListener('clear', clear, false)
       pane.addEventListener('reset', reset, false)
       pane.addEventListener('update', update, false)
+      pane.addEventListener('set', set, false)
       pane.addEventListener('reply', reply, false)
       pane.addEventListener('selected', dom.to.focus, false)
       pane.addEventListener('selected', toChanged, false)
     }
 
+    dom.encrypted.addEventListener('click', toggleEncrypted, false)
     dom.send.addEventListener('click', send, false)
     dom.to.addEventListener('change', toChanged, false)
 

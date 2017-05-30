@@ -16,10 +16,10 @@ atc.setup.userInterface = function () {
 
   // run when the dom is loaded
   function setup (event) {
-    dom = getElements('more', 'username', 'from', 'to',
-        'encrypted', 'encryptedRow', 'showmore', 'reply', 'yes', 'no', 'enable',
+    dom = getElements('username', 'to',
+        'encrypted', 'encryptedRow', 'reply',
         'compose', 'list', 'view', 'preferences',
-        'description', 'explanation', 'settings')
+        'explanation')
 
     dom.list.addEventListener('selected', function (e) {
       clearCompose()
@@ -28,61 +28,63 @@ atc.setup.userInterface = function () {
     dom.list.addEventListener('showMessage', showMessage)
 
     dom.view.addEventListener('reply', function (e) {
-      // just reusing the event triggers an InvalidStateError.
-      // so let's have a new one...
-      var reply = new CustomEvent('reply', {
-        detail: e.detail
-      })
-      var select = new Event('select')
-      dom.compose.dispatchEvent(reply)
-      dom.compose.dispatchEvent(select)
+      send(dom.compose, 'reply', e.detail)
+      send(dom.compose, 'select')
     })
 
     dom.compose.addEventListener('toChanged', updateCompose)
     dom.compose.addEventListener('send', sendmail)
 
+    dom.preferences.addEventListener('togglePrefer', togglePrefer)
+    dom.preferences.addEventListener('toggleEnable', toggleEnable)
+
     dom.username.addEventListener('toggled', changeUser)
 
-    updateDescription()
+    send(dom.preferences, 'reset', atc.client)
     setUser(atc.us.current())
   }
 
   function showMessage (e) {
-    var show = new CustomEvent('show', {
-      detail: {
-        message: e.detail.message,
-        viewer: atc.us.current()
-      }
+    send(dom.view, 'show', {
+      message: e.detail.message,
+      viewer: atc.us.current()
     })
-    var select = new Event('select')
-    dom.view.dispatchEvent(show)
-    dom.view.dispatchEvent(select)
+    send(dom.view, 'select')
   }
 
   function populateList () {
-    var populate = new CustomEvent('populate', {
-      detail: {messages: atc.msgs.messages}
-    })
-    dom.list.dispatchEvent(populate)
+    send(dom.list, 'populate', {messages: atc.msgs.messages})
+  }
+
+  function togglePrefer(e) {
+    var prefer = e.detail.prefer
+    // TODO: move into client.autocrypt model
+    if (prefer === undefined) {
+      delete atc.client.autocrypt.preferEncrypted
+    }
+    else {
+      atc.client.autocrypt.preferEncrypted = prefer
+    }
+    atc.client.selfSyncAutocryptState()
+  }
+
+  function toggleEnable(e) {
+    atc.client.enable(e.detail.enable)
   }
 
   function sendmail (e) {
-    var select = new Event('select')
     atc.provider.addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
-    dom.list.dispatchEvent(select)
+    send(dom.list, 'select')
   }
 
   function clearCompose () {
-    dom.compose.dispatchEvent(new Event('clear'))
+    send(dom.compose, 'clear')
   }
 
   function updateCompose (e) {
-    var update = new CustomEvent('update', {
-      detail: {
-        toggle: atc.client.encryptOptionTo(e.detail.to)
-      }
+    send(dom.compose, 'update', {
+      toggle: atc.client.encryptOptionTo(e.detail.to)
     })
-    dom.compose.dispatchEvent(update)
   }
 
   function clickencrypted () {
@@ -113,107 +115,25 @@ atc.setup.userInterface = function () {
     }
   }
 
-  function more () {
-    dom.showmore.checked = !dom.showmore.checked
-    updateDescription()
-    return false
-  }
-
-  function getDescription () {
-    if (!dom.enable.checked) {
-      return 'Autocrypt is disabled on this device.'
-    }
-    if (dom.yes.checked) {
-      return 'Autocrypt will encourage your peers to send you encrypted mail.'
-    }
-    if (dom.no.checked) {
-      return 'Autocrypt will discourage your peers from sending you encrypted mail.'
-    }
-    return 'Autocrypt lets your peers choose whether to send you encrypted mail.'
-  }
-
-  function autocryptPreference (p) {
-    var other
-    if (p === 'yes') {
-      other = 'no'
-    } else {
-      other = 'yes'
-      p = 'no'
-    }
-    dom[other].checked = false
-    if (dom.yes.checked) {
-      atc.client.autocrypt.preferEncrypted = true
-    } else if (dom.no.checked) {
-      atc.client.autocrypt.preferEncrypted = false
-    } else {
-      delete atc.client.autocrypt.preferEncrypted
-    }
-    atc.client.selfSyncAutocryptState()
-    updateDescription()
-  }
-
-  function autocryptEnable () {
-    atc.client.enable(dom.enable.checked)
-    updateDescription()
-  }
-
-  function updateDescription () {
-    var disabled = !dom['enable'].checked
-    dom.yes.disabled = disabled
-    dom.no.disabled = disabled
-    if (dom.showmore.checked) {
-      dom.settings.style.display = 'block'
-      dom.showmore.innerText = 'Hide Advanced Settings'
-    } else {
-      dom.settings.style.display = 'none'
-      dom.showmore.innerText = 'Advanced Settings...'
-    }
-    if (disabled) {
-      dom.yes.parentElement.classList.add('disabled')
-      dom.no.parentElement.classList.add('disabled')
-      dom.more.style.display = 'none'
-    } else {
-      dom.yes.parentElement.classList.remove('disabled')
-      dom.no.parentElement.classList.remove('disabled')
-      dom.more.style.display = 'block'
-    }
-    dom.description.innerText = getDescription()
-  }
-
   function changeUser () {
     atc.us.next()
     setUser(atc.us.current())
   }
 
   function setUser (user) {
-    var selectUser = new CustomEvent('select', { detail: user })
-    var select = new Event('select')
-
-    dom.username.dispatchEvent(selectUser)
     atc.client = atc.clients.get(user.id)
     atc.msgs.messages = []
     atc.provider.reload(user.id)
 
-    // TODO: use events on the relevant panes to achieve this.
-    dom.from.innerText = user.name
-    setupprefs()
-    dom.showmore.checked = false
-    dom.list.dispatchEvent(select)
-    updateDescription()
+    send(dom.username, 'select', user)
+    send(dom.compose, 'reset', user)
+    send(dom.preferences, 'reset', atc.client)
+    send(dom.list, 'select')
   }
 
-  function setupprefs () {
-    dom.enable.checked = atc.client.isEnabled()
-    if (atc.client.autocrypt.preferEncrypted === undefined) {
-      dom.yes.checked = false
-      dom.no.checked = false
-    } else if (atc.client.autocrypt.preferEncrypted === true) {
-      dom.yes.checked = true
-      dom.no.checked = false
-    } else if (atc.client.autocrypt.preferEncrypted === false) {
-      dom.yes.checked = false
-      dom.no.checked = true
-    }
+  function send (element, type, detail) {
+    var e = new CustomEvent(type, { detail: detail || {} })
+    element.dispatchEvent(e)
   }
 
   // push setup in the inits for the DOM ready event
@@ -221,10 +141,6 @@ atc.setup.userInterface = function () {
   atc.setup.inits.push({name: 'setup ui', setup: setup})
 
   return {
-    updateDescription: updateDescription,
-    autocryptEnable: autocryptEnable,
-    autocryptPreference: autocryptPreference,
     clickencrypted: clickencrypted,
-    more: more
   }
 }

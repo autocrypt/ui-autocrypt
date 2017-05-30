@@ -12,6 +12,7 @@
         <script type="text/javascript" src="ui/compose.js"></script>
         <script type="text/javascript" src="ui/list.js"></script>
         <script type="text/javascript" src="ui/view.js"></script>
+        <script type="text/javascript" src="ui/preferences.js"></script>
         <script type="text/javascript" src="ui/users.js"></script>
         <script type="text/javascript" src="tests.js"></script>
         <script type="text/javascript" src="tests/user-switch-test.js"></script>
@@ -86,13 +87,13 @@
                         <label>[<input type="checkbox"
                                        value="enable"
                                        id="enable"
-                                       onclick="atc.ui.autocryptEnable();"/>enable]</label>
+                                       />enable]</label>
                     </legend>
                     <div>Please enable Autocrypt on <em>only one</em> device. (<a href="#" onclick="return why();">why?</a>)
                     </div>
                     <hr />
                     <div id="more">
-                        <a id="showmore" href="#" onclick="return atc.ui.more();">more...</a>
+                        <a id="showmore" href="#" >more...</a>
                     </div>
                     <div id="settings">
                         <label>
@@ -100,16 +101,16 @@
                                    value="yes"
                                    name="prefer"
                                    id="yes"
-                                   onclick="atc.ui.autocryptPreference('yes');"/>
+                                   />
                             I prefer to receive encrypted mail.
                         </label>
                         <br/>
                         <label>
                             <input type="checkbox"
-                                   value="yes"
+                                   value="no"
                                    name="prefer"
                                    id="no"
-                                   onclick="atc.ui.autocryptPreference('no');"/>
+                                   />
                             I prefer not to receive encrypted mail.
                         </label>
                     </div>

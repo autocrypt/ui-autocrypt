@@ -10,6 +10,11 @@
     dom.encrypted.checked = false
   }
 
+  function reset (e) {
+    var user = e.detail
+    dom.from.innerText = user.name
+  }
+
   function update (e) {
     var toggle = e.detail.toggle
 
@@ -73,11 +78,13 @@
   function setup (event) {
     pane = document.getElementById('compose')
     dom = getElements(
-      'to', 'subject', 'body', 'encrypted', 'encryptedRow', 'explanation',
+      'from', 'to', 'subject', 'body',
+      'encrypted', 'encryptedRow', 'explanation',
       'send'
       )
     if (pane) {
       pane.addEventListener('clear', clear, false)
+      pane.addEventListener('reset', reset, false)
       pane.addEventListener('update', update, false)
       pane.addEventListener('reply', reply, false)
       pane.addEventListener('selected', dom.to.focus, false)

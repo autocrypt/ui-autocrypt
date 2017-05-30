@@ -16,7 +16,7 @@ atc.setup.userInterface = function () {
 
   // run when the dom is loaded
   function setup (event) {
-    dom = getElements('username', 'from', 'to',
+    dom = getElements('username', 'to',
         'encrypted', 'encryptedRow', 'reply',
         'compose', 'list', 'view', 'preferences',
         'explanation')
@@ -28,14 +28,8 @@ atc.setup.userInterface = function () {
     dom.list.addEventListener('showMessage', showMessage)
 
     dom.view.addEventListener('reply', function (e) {
-      // just reusing the event triggers an InvalidStateError.
-      // so let's have a new one...
-      var reply = new CustomEvent('reply', {
-        detail: e.detail
-      })
-      var select = new Event('select')
-      dom.compose.dispatchEvent(reply)
-      dom.compose.dispatchEvent(select)
+      send(dom.compose, 'reply', e.detail)
+      send(dom.compose, 'select')
     })
 
     dom.compose.addEventListener('toChanged', updateCompose)
@@ -46,28 +40,20 @@ atc.setup.userInterface = function () {
 
     dom.username.addEventListener('toggled', changeUser)
 
-    var reset = new CustomEvent('reset', { detail: atc.client })
-    dom.preferences.dispatchEvent(reset)
+    send(dom.preferences, 'reset', atc.client)
     setUser(atc.us.current())
   }
 
   function showMessage (e) {
-    var show = new CustomEvent('show', {
-      detail: {
-        message: e.detail.message,
-        viewer: atc.us.current()
-      }
+    send(dom.view, 'show', {
+      message: e.detail.message,
+      viewer: atc.us.current()
     })
-    var select = new Event('select')
-    dom.view.dispatchEvent(show)
-    dom.view.dispatchEvent(select)
+    send(dom.view, 'select')
   }
 
   function populateList () {
-    var populate = new CustomEvent('populate', {
-      detail: {messages: atc.msgs.messages}
-    })
-    dom.list.dispatchEvent(populate)
+    send(dom.list, 'populate', {messages: atc.msgs.messages})
   }
 
   function togglePrefer(e) {
@@ -87,22 +73,18 @@ atc.setup.userInterface = function () {
   }
 
   function sendmail (e) {
-    var select = new Event('select')
     atc.provider.addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
-    dom.list.dispatchEvent(select)
+    send(dom.list, 'select')
   }
 
   function clearCompose () {
-    dom.compose.dispatchEvent(new Event('clear'))
+    send(dom.compose, 'clear')
   }
 
   function updateCompose (e) {
-    var update = new CustomEvent('update', {
-      detail: {
-        toggle: atc.client.encryptOptionTo(e.detail.to)
-      }
+    send(dom.compose, 'update', {
+      toggle: atc.client.encryptOptionTo(e.detail.to)
     })
-    dom.compose.dispatchEvent(update)
   }
 
   function clickencrypted () {
@@ -143,15 +125,15 @@ atc.setup.userInterface = function () {
     atc.msgs.messages = []
     atc.provider.reload(user.id)
 
-    var selectUser = new CustomEvent('select', { detail: user })
-    var select = new Event('select')
-    var reset = new CustomEvent('reset', { detail: atc.client })
+    send(dom.username, 'select', user)
+    send(dom.compose, 'reset', user)
+    send(dom.preferences, 'reset', atc.client)
+    send(dom.list, 'select')
+  }
 
-    dom.username.dispatchEvent(selectUser)
-    // TODO: use events on the relevant panes to achieve this.
-    dom.from.innerText = user.name
-    dom.preferences.dispatchEvent(reset)
-    dom.list.dispatchEvent(select)
+  function send (element, type, detail) {
+    var e = new CustomEvent(type, { detail: detail || {} })
+    element.dispatchEvent(e)
   }
 
   // push setup in the inits for the DOM ready event

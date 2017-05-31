@@ -40,14 +40,16 @@ atc.setup.userInterface = function () {
     dom.username.addEventListener('toggled', changeUser)
     dom.device.addEventListener('toggled', changeDevice)
 
-    send(dom.preferences, 'reset', atc.client)
-    setUser(atc.us.current())
+    initClient()
   }
 
   function showMessage (e) {
+    var message = e.detail.message;
+    var from_me = (message.from == atc.us.current().name)
     send(dom.view, 'show', {
-      message: e.detail.message,
-      viewer: atc.us.current()
+      message: message,
+      from_me: from_me,
+      unreadable: message.encrypted && !atc.client.isEnabled()
     })
     send(dom.view, 'select')
   }
@@ -98,25 +100,26 @@ atc.setup.userInterface = function () {
     })
   }
 
+  function changeDevice () {
+    atc.dev.next()
+    send(dom.device, 'select', atc.dev.current())
+    initClient()
+  }
+
   function changeUser () {
     atc.us.next()
-    setUser(atc.us.current())
+    send(dom.username, 'select', atc.us.current())
+    initClient()
   }
 
-  function changeDevice () {
-    send(dom.device, 'select', {
-      src: 'assets/images/smartphone.png',
-      alt: 'Phone'
-    })
-  }
-
-  function setUser (user) {
-    atc.client = atc.clients.get(user.id)
+  function initClient () {
+    var user = atc.us.current()
+    var device = atc.dev.current()
+    atc.client = atc.clients.get(user.id, device.id)
     atc.msgs.messages = []
     console.log(atc.msgs.msgStore)
     atc.provider.reload(user.id)
 
-    send(dom.username, 'select', user)
     send(dom.compose, 'reset', user)
     send(dom.preferences, 'reset', atc.client)
     send(dom.list, 'select')

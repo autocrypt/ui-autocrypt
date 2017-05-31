@@ -5,8 +5,8 @@
   var toggle  // #devicetoggle
 
   function change (e) {
-    device.src = e.detail.src
-    device.alt = e.detail.alt
+    device.src = 'assets/images/' + e.detail.src
+    device.alt = e.detail.name
   }
 
   function toggled () {

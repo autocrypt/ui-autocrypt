@@ -11,7 +11,8 @@ if (!atc.setup) atc.setup = {}
 atc.setup.clients = function () {
   var storage = {}
 
-  function get (id) {
+  function get (user, device) {
+    id = user + '/' + device
     if (storage[id] === undefined) {
       storage[id] = {
         id: id,

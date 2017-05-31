@@ -8,7 +8,7 @@
     var client
 
     this.setup = function () {
-      client = atc.setup.clients().get('me')
+      client = atc.setup.clients().get('me', 'laptop')
     }
 
     it('starts blank', function () {

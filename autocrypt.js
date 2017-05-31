@@ -15,6 +15,10 @@ atc.setup.atc = function (atcO) {
     atcO.us.add('Alice', {color: 'green'})
     atcO.us.add('Bob', {color: 'darkorange'})
 
+    atcO.dev = atc.setup.collection()
+    atcO.dev.add('Laptop', {src: 'laptop.png'})
+    atcO.dev.add('Phone', {src: 'smartphone.png'})
+
     atcO.clients = atc.setup.clients()
     // cs = atc.setup.clients()
   }

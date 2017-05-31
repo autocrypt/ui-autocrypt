@@ -1,17 +1,15 @@
 if (!atc) var atc = {}
 if (!atc.setup) atc.setup = {}
-atc.setup.users = function () {
+atc.setup.collection = function () {
   var storage = {}
   var currentId
 
-  function add (username, color) {
-    var id = username.toLowerCase()
+  function add (name, attributes) {
+    var id = name.toLowerCase()
     if (storage[id] === undefined) {
-      storage[id] = {
-        name: username,
-        color: color,
-        id: id
-      }
+      storage[id] = attributes
+      storage[id].name = name
+      storage[id].id = id
     }
     currentId = currentId || id
   }

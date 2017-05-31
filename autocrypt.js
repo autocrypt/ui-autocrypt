@@ -1,5 +1,8 @@
 /* globals  atc */
 // javascript implementation of essential Autocrypt UI
+// var provider = atc.volatileProvider()
+// var ui = atc.setup.userInterface(atc)
+// var us = atc.setup.users()
 
 atc.setup.atc = function (atcO) {
   atc.msgs.messages = []
@@ -7,9 +10,10 @@ atc.setup.atc = function (atcO) {
     // messages for the current user
     atcO.msgs.messages = []
     atcO.provider.clearStorage()
-    atcO.us = atc.setup.users()
-    atcO.us.add('Alice', 'green')
-    atcO.us.add('Bob', 'darkorange')
+
+    atcO.us = atc.setup.collection()
+    atcO.us.add('Alice', {color: 'green'})
+    atcO.us.add('Bob', {color: 'darkorange'})
 
     atcO.clients = atc.setup.clients()
     // cs = atc.setup.clients()

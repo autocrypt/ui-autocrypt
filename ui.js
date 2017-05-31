@@ -16,8 +16,7 @@ atc.setup.userInterface = function () {
 
   // run when the dom is loaded
   function setup (event) {
-    dom = getElements('username', 'to',
-        'encrypted', 'encryptedRow', 'reply',
+    dom = getElements('username', 'device', 'to',
         'compose', 'list', 'view', 'preferences',
         'explanation')
 
@@ -39,6 +38,7 @@ atc.setup.userInterface = function () {
     dom.preferences.addEventListener('toggleEnable', toggleEnable)
 
     dom.username.addEventListener('toggled', changeUser)
+    dom.device.addEventListener('toggled', changeDevice)
 
     send(dom.preferences, 'reset', atc.client)
     setUser(atc.us.current())
@@ -101,6 +101,13 @@ atc.setup.userInterface = function () {
   function changeUser () {
     atc.us.next()
     setUser(atc.us.current())
+  }
+
+  function changeDevice () {
+    send(dom.device, 'select', {
+      src: 'assets/images/smartphone.png',
+      alt: 'Phone'
+    })
   }
 
   function setUser (user) {

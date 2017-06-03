@@ -34,12 +34,12 @@ atc.provider = (function () {
   }
   function receive (msg) {
     atc.client.processIncoming(msg)
-    atc.msgs.messages.push(msg)
+    atc.msgs.messages.push(JSON.parse(JSON.stringify(msg)))
   }
 
   function reload (name) {
-    for (var x in getMsgs(name)) {
-      this.receive(getMsgs(name)[x])
+    for (let msg of getMsgs(name)) {
+      this.receive(msg)
     }
   }
 

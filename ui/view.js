@@ -22,7 +22,7 @@
     dom.to.innerText = msg.to
     dom.subject.innerText = msg.subject
     dom.date.innerText = msg.date
-    dom.body.innerText = (e.detail.unreadable ? 'This message cannot be decrypted !' : msg.body)
+    dom.body.innerText = msg.body
     dom.encrypted.replaceChild(getEncryptionStatusNode(msg.encrypted), dom.encrypted.childNodes[0])
     dom.reply.onclick = function () { replyToMsg(msg) }
     if (e.detail.from_me) {

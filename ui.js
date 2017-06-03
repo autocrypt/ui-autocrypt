@@ -45,11 +45,11 @@ atc.setup.userInterface = function () {
 
   function showMessage (e) {
     var message = e.detail.message;
+    atc.client.decryptMessage(message)
     var from_me = (message.from == atc.us.current().name)
     send(dom.view, 'show', {
       message: message,
-      from_me: from_me,
-      unreadable: message.encrypted && !atc.client.isEnabled()
+      from_me: from_me
     })
     send(dom.view, 'select')
   }
@@ -67,7 +67,16 @@ atc.setup.userInterface = function () {
   }
 
   function sendmail (e) {
-    atc.provider.addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
+    var msg = {
+      from: atc.us.current().name,
+      to: e.detail.to,
+      subject: e.detail.subject,
+      body: e.detail.body,
+      encrypted: e.detail.encrypted,
+      date: new Date()
+    }
+    atc.client.prepareOutgoing(msg)
+    atc.provider.send(msg)
     send(dom.list, 'select')
   }
 

@@ -22,7 +22,7 @@ atc.setup.ready = function (e) {
   if (dbg === true) console.log('%cinit loop done', 'color:green')
 
   if (dbg === true) console.log('%cinit done', 'color:green')
-  if (dbg === true) Tests.run()
+  // if (dbg === true) Tests.run()
 }
 atc.setup.init(atc)
 document.addEventListener('DOMContentLoaded', atc.setup.ready)

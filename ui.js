@@ -123,6 +123,7 @@ atc.setup.userInterface = function () {
   function setUser (user) {
     atc.client = atc.clients.get(user.id)
     atc.msgs.messages = []
+    console.log(atc.msgs.msgStore)
     atc.provider.reload(user.id)
 
     send(dom.username, 'select', user)

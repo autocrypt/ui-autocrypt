@@ -1,7 +1,7 @@
 /* globals Tests */
 if (!atc) var atc = {}
 atc.setup.init = function (atcO) {
-  atcO.ui = atc.setup.userInterface(atcO)
+  atc.setup.userInterface(atcO)
   atcO.us = atc.setup.users()
   atcO.msgs = atc.setup.createMailStore(atcO)
   atcO.ac = atc.setup.atc(atcO)

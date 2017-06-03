@@ -12,16 +12,8 @@
 
   function setupprefs (client) {
     dom.enable.checked = client.isEnabled()
-    if (client.autocrypt.preferEncrypted === undefined) {
-      dom.yes.checked = false
-      dom.no.checked = false
-    } else if (client.autocrypt.preferEncrypted === true) {
-      dom.yes.checked = true
-      dom.no.checked = false
-    } else if (client.autocrypt.preferEncrypted === false) {
-      dom.yes.checked = false
-      dom.no.checked = true
-    }
+    dom.yes.checked = client.preferEncrypted()
+    dom.no.cheched = client.preferUnencrypted()
   }
 
   function autocryptPreference (e) {

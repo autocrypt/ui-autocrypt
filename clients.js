@@ -73,8 +73,26 @@ atc.setup.clients = function () {
       selfSyncAutocryptState()
     }
 
+    function prefer (preferNow) {
+      if (preferNow === undefined) {
+        delete autocrypt.preferEncrypted
+      }
+      else {
+        autocrypt.preferEncrypted = prefer
+      }
+      selfSyncAutocryptState()
+    }
+
     function isEnabled () {
       return autocrypt.enabled
+    }
+
+    function preferEncrypted () {
+      return (autocrypt.preferEncrypted === true)
+    }
+
+    function preferUnencrypted () {
+      return (autocrypt.preferEncrypted === false)
     }
 
     function encryptOptionTo (recipient) {
@@ -102,14 +120,33 @@ atc.setup.clients = function () {
       }
     }
 
+    // returns the explanation for the encrypt toggle during composition
+    function explain(enc) {
+      var to = enc.to
+      var disabled = enc.disabled
+      var peer = getPeerAc(to)
+      if (!isEnabled() && !enc.disabled) {
+        return('enable Autocrypt to encrypt')
+      }
+      if (enc.checked && peer.preferEncrypted === false) {
+        return(to + ' prefers to receive unencrypted mail. ' +
+          'It might be hard for them to read.')
+      }
+      if (!enc.checked && peer.preferEncrypted === true) {
+        return(to + ' prefers to receive encrypted mail!')
+      }
+    }
+
+
     return {
-      autocrypt: autocrypt,
       processIncoming: processIncoming,
       makeHeader: makeHeader,
-      getPeerAc: getPeerAc,
+      explain: explain,
       enable: enable,
+      prefer: prefer,
       isEnabled: isEnabled,
-      selfSyncAutocryptState: selfSyncAutocryptState,
+      preferEncrypted: preferEncrypted,
+      preferUnencrypted: preferUnencrypted,
       encryptOptionTo: encryptOptionTo
     }
   }

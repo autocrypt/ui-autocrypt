@@ -1,14 +1,14 @@
 /* globals atc, Tests */
-/* unit test for users */
+/* unit test for collections */
 
-(function userTests (atcO, describe) {
-  describe('Users', function (it, assert) {
+(function collectionTests (atcO, describe) {
+  describe('Collection', function (it, assert) {
     var us
 
     this.setup = function () {
-      us = atcO.setup.users()
-      us.add('Alice', 'green')
-      us.add('Bob', 'darkorange')
+      us = atcO.setup.collection()
+      us.add('Alice', {color: 'green'})
+      us.add('Bob', {color: 'darkorange'})
     }
 
     it('starts with Alice', function () {
@@ -31,14 +31,14 @@
       assert.equal('Alice', us.current().name)
     })
 
-    it('has constant ids for the same user', function () {
+    it('has constant ids for the same element', function () {
       var id = us.current().id
       us.next()
       us.next()
       assert.equal(id, us.current().id)
     })
 
-    it('has different ids for different users', function () {
+    it('has different ids for different elements', function () {
       var id = us.current().id
       us.next()
       assert.notEqual(id, us.current().id)

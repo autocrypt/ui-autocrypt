@@ -34,12 +34,12 @@ atc.provider = (function () {
   }
   function receive (msg) {
     atc.client.processIncoming(msg)
-    atc.msgs.messages.push(msg)
+    atc.msgs.messages.push(JSON.parse(JSON.stringify(msg)))
   }
 
   function reload (name) {
-    for (var x in getMsgs(name)) {
-      this.receive(getMsgs(name)[x])
+    for (let msg of getMsgs(name)) {
+      this.receive(msg)
     }
   }
 
@@ -50,30 +50,11 @@ atc.provider = (function () {
     return boxes[name.toLowerCase()]
   }
 
-  // document.addEventListener('sendMsg', function (e) {
-  //   console.log('event:sendMsg', e.detail)
-  // }, false)
-
-  function addmail (to, subj, body, encrypted) {
-    var msg = {
-      from: atc.us.current().name,
-      to: to,
-      subject: subj,
-      body: body,
-      encrypted: encrypted,
-      autocrypt: atc.client.makeHeader(),
-      date: new Date()
-    }
-    atc.provider.send(msg)
-    return true
-  }
-
   return {
     send: send,
     reload: reload,
     boxes: boxes,
     storage: storage,
-    addmail: addmail,
     receive: receive,
     clearStorage: clearStorage
   }

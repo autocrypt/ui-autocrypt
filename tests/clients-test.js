@@ -8,17 +8,21 @@
     var client
 
     this.setup = function () {
-      client = atc.setup.clients().get('me')
+      client = atc.setup.clients().get('me', 'laptop')
     }
 
     it('starts blank', function () {
-      assert((client.makeHeader() === undefined),
+      var msg = { to: 'other' }
+      client.prepareOutgoing(msg)
+      assert((msg.autocrypt === undefined),
           'Clients start without an autocrypt header')
     })
 
     it('can be enabled', function () {
+      var msg = { to: 'other' }
       client.enable(true)
-      assert((client.makeHeader() !== undefined),
+      client.prepareOutgoing(msg)
+      assert((msg.autocrypt !== undefined),
           'Enabled clients has an autocrypt header')
     })
   })

@@ -2,6 +2,31 @@ body {
     font-family: sans-serif;
 }
 
+div#main {
+}
+
+div#sidebar {
+    width: 200px;
+    float: right;
+}
+
+div#main {
+    width: 80%;
+    float: left;
+}
+
+img.device {
+    width: 180px;
+}
+
+div#login-info {
+    text-align: left;
+}
+
+div#menu-device {
+    margin-top: 50px;
+}
+
 label {
     cursor: pointer;
 }

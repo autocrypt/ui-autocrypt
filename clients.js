@@ -11,7 +11,8 @@ if (!atc.setup) atc.setup = {}
 atc.setup.clients = function () {
   var storage = {}
 
-  function get (id) {
+  function get (user, device) {
+    id = user + '/' + device
     if (storage[id] === undefined) {
       storage[id] = {
         id: id,
@@ -20,6 +21,25 @@ atc.setup.clients = function () {
       }
     }
     var autocrypt = storage[id]
+
+    function prepareOutgoing(msg) {
+      var peer = getPeerAc(msg.to)
+      msg.autocrypt = makeHeader()
+      if (msg.encrypted) {
+        msg.encryptedTo = [
+          autocrypt.key,
+          peer.key
+        ]
+      }
+    }
+
+    function decryptMessage(msg) {
+      if (!msg.encrypted) { return }
+      if (msg.encryptedTo.indexOf(autocrypt.key) == -1) {
+        msg.body = 'The message could not be decrypted.'
+        msg.unreadable = true
+      }
+    }
 
     function makeHeader () {
       if (autocrypt.enabled === false) { return undefined }
@@ -140,7 +160,8 @@ atc.setup.clients = function () {
 
     return {
       processIncoming: processIncoming,
-      makeHeader: makeHeader,
+      prepareOutgoing: prepareOutgoing,
+      decryptMessage: decryptMessage,
       explain: explain,
       enable: enable,
       prefer: prefer,

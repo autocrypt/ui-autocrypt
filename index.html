@@ -2,7 +2,7 @@
     <head>
         <title>Autocrypt Essential UI Demo</title>
         <script type="text/javascript" src="providers/provider.js"></script>
-        <script type="text/javascript" src="users.js"></script>
+        <script type="text/javascript" src="util/collection.js"></script>
         <script type="text/javascript" src="ui.js"></script>
         <script type="text/javascript" src="clients.js"></script>
         <script type="text/javascript" src="messageStore.js"></script>
@@ -14,59 +14,68 @@
         <script type="text/javascript" src="ui/view.js"></script>
         <script type="text/javascript" src="ui/preferences.js"></script>
         <script type="text/javascript" src="ui/users.js"></script>
+        <script type="text/javascript" src="ui/devices.js"></script>
         <script type="text/javascript" src="tests.js"></script>
         <script type="text/javascript" src="tests/user-switch-test.js"></script>
-        <script type="text/javascript" src="tests/users-test.js"></script>
+        <script type="text/javascript" src="tests/util/collection-test.js"></script>
         <script type="text/javascript" src="tests/clients-test.js"></script>
         <script type="text/javascript" src="tests/smoke-test.js"></script>
         <script type="text/javascript" src="tests/messageStore-test.js"></script>
         <link rel="stylesheet" type="text/css" href="ui.css" />
     </head>
     <body>
-        <div id="menu">
-            <ul>
-                <li id="tab-compose">Write mail</li>
-                <li id="tab-list">Mailbox</li>
-                <li id="tab-preferences">Preferences</li>
-            </ul>
+        <div id="sidebar">
             <div id="login-info">
-              <div id="menu-username">
-                Logged in as
-                <div id="username">user</div>
-              </div>
-              (<a id="usertoggle" href="#">change</a>)
+                <div id="menu-username">
+                    Logged in as
+                    <div id="username">user</div>
+                    (<a id="usertoggle" href="#">change</a>)
+                </div>
+                <div id="menu-device">
+                    Using
+                    <img id="device" alt="laptop" src="assets/images/laptop.png"/>
+                    (<a id="devicetoggle" href="#">change</a>)
+                </div>
             </div>
         </div>
-
-        <form id="compose">
-            <div>
-                <table><tbody>
-                        <tr><th>From:</th><td id="from"></td></tr>
-                        <tr><th>To:</th><td><input id="to" /></td></tr>
-                        <tr><th>Subject:</th><td><input id="subject" /></td></tr>
-                        <tr id="encryptedRow"><td colspan="2"><label><input type="checkbox" id="encrypted">Encrypt</label><span id="explanation"></span></td></tr>
-                        <tr><td id="compose-actions" colspan="2">
-                                <input type="button" id="send" value="Send"/>
-                        </td></tr>
-                        <tr><td colspan="2">
-                                <textarea id="body"></textarea>
-                        </td></tr>
-                </tbody></table>
+        <div id="main">
+            <div id="menu">
+                <ul>
+                    <li id="tab-compose">Write mail</li>
+                    <li id="tab-list">Mailbox</li>
+                    <li id="tab-preferences">Preferences</li>
+                </ul>
             </div>
-        </form>
 
-        <div id="list">
-            <div id="listReplacement">No messages!</div>
-            <table id="msgtable">
-                <thead>
-                    <th>...</th><th>From</th><th>To</th><th>Subject</th><th>Date</th>
-                </thead>
-                <tbody id="msglist">
-                </tbody>
-            </table>
-        </div>
+            <form id="compose">
+                <div>
+                    <table><tbody>
+                            <tr><th>From:</th><td id="from"></td></tr>
+                            <tr><th>To:</th><td><input id="to" /></td></tr>
+                            <tr><th>Subject:</th><td><input id="subject" /></td></tr>
+                            <tr id="encryptedRow"><td colspan="2"><label><input type="checkbox" id="encrypted">Encrypt</label><span id="explanation"></span></td></tr>
+                            <tr><td id="compose-actions" colspan="2">
+                                    <input type="button" id="send" value="Send"/>
+                                </td></tr>
+                                <tr><td colspan="2">
+                                        <textarea id="body"></textarea>
+                                    </td></tr>
+                        </tbody></table>
+                </div>
+            </form>
 
-        <div id="view">
+            <div id="list">
+                <div id="listReplacement">No messages!</div>
+                <table id="msgtable">
+                    <thead>
+                        <th>...</th><th>From</th><th>To</th><th>Subject</th><th>Date</th>
+                    </thead>
+                    <tbody id="msglist">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="view">
                 <table><tbody>
                         <tr><th>From:</th><td id="viewFrom"></td></tr>
                         <tr><th>To:</th><td id="viewTo"></td></tr>
@@ -75,50 +84,51 @@
                         <tr><td colspan="2" id="viewEncrypted"><span></span></td></tr>
                         <tr><td id="view-actions" colspan="2">
                                 <input type="button" id="reply" onclick="return false;" value="Reply"/>
-                        </td></tr>
-                        <tr><td colspan="2" id="viewBody"></td></tr>
-                </tbody></table>
-        </div>
-
-        <form id="preferences">
-            <div>
-                <fieldset>
-                    <legend><span id="title">Autocrypt Settings</span>
-                        <label>[<input type="checkbox"
-                                       value="enable"
-                                       id="enable"
-                                       />enable]</label>
-                    </legend>
-                    <div>Please enable Autocrypt on <em>only one</em> device. (<a href="#" onclick="return why();">why?</a>)
-                    </div>
-                    <hr />
-                    <div id="more">
-                        <a id="showmore" href="#" >more...</a>
-                    </div>
-                    <div id="settings">
-                        <label>
-                            <input type="checkbox"
-                                   value="yes"
-                                   name="prefer"
-                                   id="yes"
-                                   />
-                            I prefer to receive encrypted mail.
-                        </label>
-                        <br/>
-                        <label>
-                            <input type="checkbox"
-                                   value="no"
-                                   name="prefer"
-                                   id="no"
-                                   />
-                            I prefer not to receive encrypted mail.
-                        </label>
-                    </div>
-                    <div id="description">
-                        Description goes here.
-                    </div>
-                </fieldset>
+                            </td></tr>
+                            <tr><td colspan="2" id="viewBody"></td></tr>
+                    </tbody></table>
             </div>
-        </form>
+
+            <form id="preferences">
+                <div>
+                    <fieldset>
+                        <legend><span id="title">Autocrypt Settings</span>
+                            <label>[<input type="checkbox"
+                                           value="enable"
+                                           id="enable"
+                                           />enable]</label>
+                        </legend>
+                        <div>Please enable Autocrypt on <em>only one</em> device. (<a href="#" onclick="return why();">why?</a>)
+                        </div>
+                        <hr />
+                        <div id="more">
+                            <a id="showmore" href="#" >more...</a>
+                        </div>
+                        <div id="settings">
+                            <label>
+                                <input type="checkbox"
+                                       value="yes"
+                                       name="prefer"
+                                       id="yes"
+                                       />
+                                I prefer to receive encrypted mail.
+                            </label>
+                            <br/>
+                            <label>
+                                <input type="checkbox"
+                                       value="no"
+                                       name="prefer"
+                                       id="no"
+                                       />
+                                I prefer not to receive encrypted mail.
+                            </label>
+                        </div>
+                        <div id="description">
+                            Description goes here.
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
     </body>
 </html>

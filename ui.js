@@ -16,8 +16,7 @@ atc.setup.userInterface = function () {
 
   // run when the dom is loaded
   function setup (event) {
-    dom = getElements('username', 'to',
-        'encrypted', 'encryptedRow', 'reply',
+    dom = getElements('username', 'device', 'to',
         'compose', 'list', 'view', 'preferences',
         'explanation')
 
@@ -39,15 +38,18 @@ atc.setup.userInterface = function () {
     dom.preferences.addEventListener('toggleEnable', toggleEnable)
 
     dom.username.addEventListener('toggled', changeUser)
+    dom.device.addEventListener('toggled', changeDevice)
 
-    send(dom.preferences, 'reset', atc.client)
-    setUser(atc.us.current())
+    initClient()
   }
 
   function showMessage (e) {
+    var message = e.detail.message;
+    atc.client.decryptMessage(message)
+    var from_me = (message.from == atc.us.current().name)
     send(dom.view, 'show', {
-      message: e.detail.message,
-      viewer: atc.us.current()
+      message: message,
+      from_me: from_me
     })
     send(dom.view, 'select')
   }
@@ -65,7 +67,16 @@ atc.setup.userInterface = function () {
   }
 
   function sendmail (e) {
-    atc.provider.addmail(e.detail.to, e.detail.subject, e.detail.body, e.detail.encrypted)
+    var msg = {
+      from: atc.us.current().name,
+      to: e.detail.to,
+      subject: e.detail.subject,
+      body: e.detail.body,
+      encrypted: e.detail.encrypted,
+      date: new Date()
+    }
+    atc.client.prepareOutgoing(msg)
+    atc.provider.send(msg)
     send(dom.list, 'select')
   }
 
@@ -98,18 +109,26 @@ atc.setup.userInterface = function () {
     })
   }
 
-  function changeUser () {
-    atc.us.next()
-    setUser(atc.us.current())
+  function changeDevice () {
+    atc.dev.next()
+    send(dom.device, 'select', atc.dev.current())
+    initClient()
   }
 
-  function setUser (user) {
-    atc.client = atc.clients.get(user.id)
+  function changeUser () {
+    atc.us.next()
+    send(dom.username, 'select', atc.us.current())
+    initClient()
+  }
+
+  function initClient () {
+    var user = atc.us.current()
+    var device = atc.dev.current()
+    atc.client = atc.clients.get(user.id, device.id)
     atc.msgs.messages = []
     console.log(atc.msgs.msgStore)
     atc.provider.reload(user.id)
 
-    send(dom.username, 'select', user)
     send(dom.compose, 'reset', user)
     send(dom.preferences, 'reset', atc.client)
     send(dom.list, 'select')

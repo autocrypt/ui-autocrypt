@@ -18,7 +18,6 @@
 
   function show (e) {
     var msg = e.detail.message
-    var usr = e.detail.viewer
     dom.from.innerText = msg.from
     dom.to.innerText = msg.to
     dom.subject.innerText = msg.subject
@@ -26,7 +25,7 @@
     dom.body.innerText = msg.body
     dom.encrypted.replaceChild(getEncryptionStatusNode(msg.encrypted), dom.encrypted.childNodes[0])
     dom.reply.onclick = function () { replyToMsg(msg) }
-    if (msg.from === usr.name) {
+    if (e.detail.from_me) {
       dom.reply.style.display = 'none'
     } else {
       dom.reply.style.display = 'inline'

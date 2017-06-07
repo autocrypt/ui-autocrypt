@@ -42,8 +42,9 @@
     }
 
     this.setup = function () {
+      console.log('setup called')
       try {
-        localStorage.clear()
+        // localStorage.clear()
       } catch (err) {}
       atc.ac.resetClient()
       // make sure user display is okay and we are set on alice

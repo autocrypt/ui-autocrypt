@@ -7,7 +7,7 @@ atc.setup.init = function (atcO) {
   atcO.ac = atc.setup.atc(atcO)
 }
 atc.setup.ready = function (e) {
-  var dbg = true // debug log seq and run tests
+  var dbg = false // debug log seq and run tests
   atc.ac.resetClient()
   // loop over the setup inits
   if (atc.setup.inits.length > 0) {
@@ -19,10 +19,8 @@ atc.setup.ready = function (e) {
     })
   }
   // things to do once all setup ran
-  if (dbg === true) console.log('%cinit loop done', 'color:green')
 
-  if (dbg === true) console.log('%cinit done', 'color:green')
-  // if (dbg === true) Tests.run()
+  if (dbg === true) Tests.run()
 }
 atc.setup.init(atc)
 document.addEventListener('DOMContentLoaded', atc.setup.ready)

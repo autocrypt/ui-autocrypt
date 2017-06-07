@@ -14,6 +14,7 @@ atc.provider = (function () {
     } catch (exception) { return false /* some brower throw */ }
   }())
   function clearStorage () {
+    console.log('clear called')
     if (storage) {
       storage.clear()
       console.log('storage cleared')
@@ -41,6 +42,23 @@ atc.provider = (function () {
     for (var x in getMsgs(name)) {
       this.receive(getMsgs(name)[x])
     }
+  }
+
+  function makeUserMsgStore (usr) {
+    var msgs = []
+    usr = usr.toLowerCase()
+    if (this.storage[usr]) {
+      var usrMsgs = JSON.parse(this.storage[usr])
+      usrMsgs.inbox.forEach(function (msg) {
+        msgs.push(msg)
+      })
+      usrMsgs.outbox.forEach(function (msg) {
+        msgs.push(msg)
+      })
+    }
+    console.log(msgs)
+
+    return msgs
   }
 
   function getMsgs (name) {
@@ -75,7 +93,8 @@ atc.provider = (function () {
     storage: storage,
     addmail: addmail,
     receive: receive,
-    clearStorage: clearStorage
+    clearStorage: clearStorage,
+    makeUserMsgStore: makeUserMsgStore
   }
 }())
 

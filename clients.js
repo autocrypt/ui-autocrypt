@@ -16,6 +16,7 @@ atc.setup.clients = function () {
     if (storage[id] === undefined) {
       storage[id] = {
         id: id,
+        address: user,
         enabled: false,
         state: {}
       }
@@ -41,6 +42,12 @@ atc.setup.clients = function () {
       }
     }
 
+    function importSecretKey () {
+      autocrypt.enabled = true
+      autocrypt.key = autocrypt.state[autocrypt.address].key
+      autocrypt.preferEncrypted = autocrypt.state[autocrypt.address].preferEncrypted
+    }
+
     function makeHeader () {
       if (autocrypt.enabled === false) { return undefined }
       return { 'key': autocrypt.key,
@@ -60,6 +67,9 @@ atc.setup.clients = function () {
       var newac = {
         'date': msg.date
       }
+      if ((msg.from === msg.to) && msg.setupMessage) {
+        autocrypt.receivedSetupMail = true
+      }
       if (msg.autocrypt === undefined) {
         // TODO remove
       } else {
@@ -71,15 +81,19 @@ atc.setup.clients = function () {
       }
     }
 
+    function hasSetupMail () {
+      return autocrypt.receivedSetupMail
+    }
+
     function selfSyncAutocryptState () {
       if (autocrypt.enabled) {
-        autocrypt.state[autocrypt.id] = {
+        autocrypt.state[autocrypt.address] = {
           date: new Date(),
           key: autocrypt.key,
           preferEncrypted: autocrypt.preferEncrypted
         }
       } else {
-        autocrypt.state[autocrypt.id] = {
+        autocrypt.state[autocrypt.address] = {
           'date': new Date()
         }
       }
@@ -160,8 +174,10 @@ atc.setup.clients = function () {
 
     return {
       processIncoming: processIncoming,
+      hasSetupMail: hasSetupMail,
       prepareOutgoing: prepareOutgoing,
       decryptMessage: decryptMessage,
+      importSecretKey: importSecretKey,
       explain: explain,
       enable: enable,
       prefer: prefer,

@@ -34,6 +34,10 @@
     updateDescription()
   }
 
+  function transfer (e) {
+    emit('setupMessage')
+  }
+
   function autocryptEnable (e) {
     emit('toggleEnable', { enable: e.target.checked })
     updateDescription()
@@ -98,7 +102,8 @@
   function setup (event) {
     pane = document.getElementById('preferences')
     dom = getElements(
-      'yes', 'no', 'showmore', 'more', 'description', 'enable', 'settings'
+      'yes', 'no', 'showmore', 'more', 'description', 'enable', 'settings',
+      'transfer'
       )
     if (pane) {
       pane.addEventListener('reset', reset, false)
@@ -106,6 +111,7 @@
     dom.yes.addEventListener('click', autocryptPreference)
     dom.no.addEventListener('click', autocryptPreference)
     dom.showmore.addEventListener('click', more)
+    dom.transfer.addEventListener('click', transfer)
     dom.enable.addEventListener('click', autocryptEnable)
   }
   if (!atc.setup.inits) atc.setup.inits = []

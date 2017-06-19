@@ -9,6 +9,7 @@
   function enableAutocrypt () {
     click('tab-preferences')
     click('enable')
+    click('initial')
   }
 
   function composeTo (recipient) {
@@ -35,10 +36,28 @@
     click('usertoggle')
   }
 
+  function switchDevice () {
+    click('devicetoggle')
+  }
+
+  function sendSetupMail () {
+    click('tab-preferences')
+    click('transfer')
+  }
+
+  function setupMulti () {
+    click('enable')
+    click('multi')
+    click('finish')
+  }
+
   describe('Smoke test', function (it, assert) {
-    function assertHasEncryptedEmail () {
+    function assertCanReadEncryptedEmail () {
       click('tab-list')
-      assert.selector('#msgtable img[src*="readonly"]')
+      var elem = document.querySelector('#msgtable img[src*="readonly"]')
+      elem.click()
+      assert.content('Message was encrypted', 'viewEncrypted')
+      assert.content('body', 'viewBody')
     }
 
     this.setup = function () {
@@ -51,6 +70,10 @@
       switchUser()
     }
 
+    // full lucky path...
+    // setup autocrypt for both users,
+    // setup multidevice for alice,
+    // read encrypted email on second device
     it('autocrypts when enabled', async function () {
       enableAutocrypt()
       composeTo('Bob')
@@ -63,7 +86,11 @@
       await sleep(10)
       checkEncrypt()
       send()
-      assertHasEncryptedEmail()
+      switchUser()
+      sendSetupMail()
+      switchDevice()
+      setupMulti()
+      assertCanReadEncryptedEmail()
     })
   })
 })()

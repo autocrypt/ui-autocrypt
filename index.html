@@ -1,5 +1,6 @@
 <html>
     <head>
+        <meta charset="utf-8" />
         <title>Autocrypt Essential UI Demo</title>
         <script type="text/javascript" src="providers/provider.js"></script>
         <script type="text/javascript" src="util/collection.js"></script>
@@ -13,15 +14,17 @@
         <script type="text/javascript" src="ui/list.js"></script>
         <script type="text/javascript" src="ui/view.js"></script>
         <script type="text/javascript" src="ui/preferences.js"></script>
+        <script type="text/javascript" src="ui/setup.js"></script>
         <script type="text/javascript" src="ui/users.js"></script>
         <script type="text/javascript" src="ui/devices.js"></script>
         <script type="text/javascript" src="tests.js"></script>
         <script type="text/javascript" src="tests/user-switch-test.js"></script>
         <script type="text/javascript" src="tests/util/collection-test.js"></script>
         <script type="text/javascript" src="tests/clients-test.js"></script>
-        <script type="text/javascript" src="tests/smoke-test.js"></script>
         <script type="text/javascript" src="tests/messageStore-test.js"></script>
+        <script type="text/javascript" src="tests/smoke-test.js"></script>
         <link rel="stylesheet" type="text/css" href="ui.css" />
+
     </head>
     <body>
         <div id="sidebar">
@@ -65,6 +68,10 @@
             </form>
 
             <div id="list">
+
+                <div id="message" style="display:none;">
+                </div>
+
                 <div id="listReplacement">No messages!</div>
                 <table id="msgtable">
                     <thead>
@@ -98,8 +105,12 @@
                                            id="enable"
                                            />enable]</label>
                         </legend>
-                        <div>Please enable Autocrypt on <em>only one</em> device. (<a href="#" onclick="return why();">why?</a>)
-                        </div>
+                        <hr />
+                        You can setup autocrypt for this email address elsewhere with a setup mail and a secret code.
+                        <button id='transfer'>Send setup mail and create secret code</button>
+
+
+
                         <hr />
                         <div id="more">
                             <a id="showmore" href="#" >more...</a>
@@ -129,6 +140,45 @@
                     </fieldset>
                 </div>
             </form>
+
+            <div id="setup">
+              <form id="scenario">
+                <div>
+                  Do you already have autocrypt for this email address on
+                  a different machine or in a different program?
+                </div>
+                <button id="initial">
+                  No - Setup autocrypt for this email address.
+                </button>
+                <br/>
+                <button id="multi">
+                  Yes - Use existing autocrypt for this email address.
+                </button>
+              </form>
+
+              <div id="secrets" style="display:none">
+                <div id="missing-secrets">
+                  In order to use the existing autocrypt you need
+                  <ul>
+                    <li>An autocrypt setup mail</li>
+                    <li>The autocrypt secret code for that mail</li>
+                  </ul>
+                  You can create both in any of your existing autocrypt installations.
+                </div>
+                <button id='check'>Check for autocrypt setup mail</button>
+              </div>
+
+              <form id="code" style="display:none;">
+                <div id="setup-mail-found">
+                  An autocrypt setup mail has been found in your mailbox.
+                  Please enter the autocrypt secret code to activate autocrypt:
+                  <fieldset>
+                    <input/>
+                  </fieldset>
+                  <button id='finish'>Finalize Setup</button>
+                </div>
+              </form>
+            </div>
         </div>
     </body>
 </html>

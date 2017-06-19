@@ -17,7 +17,7 @@ atc.setup.userInterface = function () {
   // run when the dom is loaded
   function setup (event) {
     dom = getElements('username', 'device', 'to',
-        'compose', 'list', 'view', 'preferences',
+        'compose', 'list', 'view', 'preferences', 'setup',
         'explanation')
 
     dom.list.addEventListener('showMessage', showMessage)
@@ -36,6 +36,11 @@ atc.setup.userInterface = function () {
 
     dom.preferences.addEventListener('togglePrefer', togglePrefer)
     dom.preferences.addEventListener('toggleEnable', toggleEnable)
+    dom.preferences.addEventListener('setupMessage', setupMessage)
+
+    dom.setup.addEventListener('initialSetup', initialSetup)
+    dom.setup.addEventListener('multiSetup', multiSetup)
+    dom.setup.addEventListener('multiImport', multiImport)
 
     dom.username.addEventListener('toggled', changeUser)
     dom.device.addEventListener('toggled', changeDevice)
@@ -63,7 +68,31 @@ atc.setup.userInterface = function () {
   }
 
   function toggleEnable(e) {
-    atc.client.enable(e.detail.enable)
+    if (e.detail.enable) {
+      send(dom.setup, 'select')
+    }
+    else {
+      atc.client.enable(e.detail.enable)
+    }
+  }
+
+  function initialSetup(e) {
+    atc.client.enable(true)
+    send(dom.preferences, 'select')
+  }
+
+  function multiSetup(e) {
+    if (atc.client.hasSetupMail()) {
+      send(dom.setup, 'import')
+    } else
+    {
+      send(dom.setup, 'check')
+    }
+  }
+
+  function multiImport(e) {
+    atc.client.importSecretKey()
+    send(dom.list, 'select')
   }
 
   function sendmail (e) {
@@ -74,6 +103,21 @@ atc.setup.userInterface = function () {
       body: e.detail.body,
       encrypted: e.detail.encrypted,
       date: new Date()
+    }
+    atc.client.prepareOutgoing(msg)
+    atc.provider.send(msg)
+    send(dom.list, 'select')
+  }
+
+  function setupMessage (e) {
+    var msg = {
+      from: atc.us.current().name,
+      to: atc.us.current().name,
+      subject: 'Autocrypt Setup Message',
+      body: 'This message allows setting up autocrypt using the setup code',
+      date: new Date(),
+      encrypted: false,
+      setupMessage: true
     }
     atc.client.prepareOutgoing(msg)
     atc.provider.send(msg)
@@ -126,7 +170,7 @@ atc.setup.userInterface = function () {
     var device = atc.dev.current()
     atc.client = atc.clients.get(user.id, device.id)
     atc.msgs.messages = []
-    console.log(atc.msgs.msgStore)
+    // console.log(atc.msgs.msgStore)
     atc.provider.reload(user.id)
 
     send(dom.compose, 'reset', user)
